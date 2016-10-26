@@ -45,7 +45,7 @@ testCollision:- % Doit renvoyer false après 3 affichages.
 	displayBoard, 
 	move(6,5, 'S', 1), 
 	displayBoard,
-	writeln('Test failure : expected false').
+	writeln('Test failure : expected false after 3 printboard').
 testCollision:- writeln('Test success : expected prolog return false').
 
 testChange :-
@@ -53,59 +53,70 @@ testChange :-
 	setCaseOnBoard(2,3,'_R_'), 
 	displayBoard.
 
+testRemovePiece:-
+	initGame(13),
+	attackers(PreAtt),
+	defenders(PreDef),
+	removePieceOnBoard(6,6),
+	displayBoard,
+	removePieceOnBoard(5,6),
+	displayBoard,
+	removePieceOnBoard(0,6),
+	displayBoard,
+	attackers(PostAtt),
+	defenders(PostDef),
+	printList(PreAtt),
+	printList(PostAtt),writeln(''),
+	printList(PreDef),
+	printList(PostDef).
+	
 testCombat :- 
 	init(9),
 	initListAttDef,
-    setCaseOnBoard(3, 3, '_D_'),
-		setPieceInDefenders(0,[3,3]),	
-    setCaseOnBoard(3, 4, '_A_'),
-		setPieceInDefenders(0,[3,3]),
-    setCaseOnBoard(2, 3, '_A_'),
-		setPieceInDefenders(0,[3,3]),
-    setCaseOnBoard(4, 3, '_A_'),
-		setPieceInDefenders(0,[3,3]),
-    setCaseOnBoard(1, 3, '_D_'),
-		setPieceInDefenders(0,[3,3]),
-    setCaseOnBoard(5, 3, '_D_'),
-		setPieceInDefenders(0,[3,3]),
-    setCaseOnBoard(2, 5, '_D_'),
-		setPieceInDefenders(0,[3,3]),
+	setPieceOnBoard(0,[3,3],'_A_'),
+	setPieceOnBoard(1,[3,4],'_A_'),
+	setPieceOnBoard(2,[2,3],'_A_'),
+	setPieceOnBoard(1,[4,3],'_D_'),	
+	setPieceOnBoard(2,[1,3],'_D_'),
+	setPieceOnBoard(3,[5,3],'_D_'),
+	setPieceOnBoard(4,[2,5],'_D_'),	
     displayBoard,
-    move(2,5, 'E', 1),
+    move(2,5,'E', 1),
     displayBoard.
 
-testPlayerChange:- assert(currentPlayer('D')), changePlayer, currentPlayer(Player), write(Player).
+testPlayerChange:- 
+	assert(currentPlayer('D')), 
+	changePlayer, 
+	currentPlayer(Player), 
+	write(Player).
 
-testListAttDef(List) :-
-    assert(attackers(List)),
-    printList(List),
-    writeln('\n\n'),
+testListAttDef:-
     setPieceInAttackers(1,[9,9]),
-    getPieceInAttackers(2,X),
-    printList(X), writeln('\n\n'),
-    getPieceInAttackers(1,Y),
-    printList(Y),writeln('\n\n'),
+    getPieceInAttackers(1,X),
+    printList(X),
     attackers(Att),
-    printList(Att).
+    printList(Att),
+	setPieceInDefenders(3,[6,6]),
+    getPieceInDefenders(3,Y),
+    printList(Y),
+    defenders(Def),
+    printList(Def).
     
 testCreationList :-
     initGame(13),
     attackers(Att),
     defenders(Def),
     printList(Att),
-    writeln('\n'),
     printList(Def).
 	
 testUpdatePiecesAtt :-
     initGame(13),
     attackers(Att),
     printList(Att),
-    writeln('\n'),
-	writeln('\n Time to update ! \n'),
+	write('\n Time to update ! \n'),
 	getPieceInAttackers(2,X),
 	updatePieceOnBoard(X,[3,3]),
 	displayBoard,
-	writeln('\n'),
 	attackers(NewAtt),
     printList(NewAtt).
 	
@@ -113,8 +124,9 @@ launchAllTests :-
 	writeln('=== testMove'),testMove,
 	writeln('=== testChange'),testChange,
 	writeln('=== testCombat'),testCombat,
+	writeln('=== testRemovePiece'),testRemovePiece,
 	writeln('=== testPlayerChange'),testPlayerChange,
-	writeln('=== testListAttDef'),testListAttDef([100,100,100,100]),
+	writeln('=== testListAttDef'),testListAttDef,
 	writeln('=== testCreationList'),testCreationList,
 	writeln('=== testUpdatePiecesAtt'),testUpdatePiecesAtt,
 	writeln('=== testCollision'),testCollision.

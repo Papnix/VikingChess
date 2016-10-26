@@ -3,7 +3,7 @@
 
 % - Affichage Plateau ----------------------------------------------------------------------------------------------------------------------------- %
 
-printList([]).
+printList([]):- writeln('').
 printList([H|T]) :- write(H), write(' '), printList(T).
 printBoard([]).
 printBoard([H|T]) :- printList(H), writeln(''), printBoard(T).

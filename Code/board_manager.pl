@@ -99,7 +99,7 @@ setPieceInAttackers(Indice,Piece) :-
 	
 updatePieceInAttackers([Old_X,Old_Y],[X,Y]):-
 	attackers(List), 
-	update([Old_X,Old_Y],List, NewList, [X|Y]), 
+	update([Old_X,Old_Y],List, NewList, [X,Y]), 
 	updateAttackers(NewList).
 	
 getPieceInAttackers(Indice,Piece) :- 
@@ -112,30 +112,31 @@ setPieceInDefenders(Indice,Piece) :-
 	replace(List,Indice,Piece,NewList), 
 	updateDefenders(NewList).
 	
-updatePieceInDefenders([Old_X|Old_Y],[X|Y]):- 
+updatePieceInDefenders([Old_X,Old_Y],[X,Y]):- 
 	defenders(List), 
-	update(OldPiece, List, NewList, NewPiece), 
+	update([Old_X,Old_Y], List, NewList, [X,Y]), 
 	updateDefenders(NewList).
 	
 getPieceInDefenders(Indice,Piece) :-
 	defenders(List),
 	nth0(Indice, List, Piece).
 % -----
+removePieceOnBoard(X,Y):-
+	getCaseOnBoard(X,Y,Case),
+	(Case = '_A_' -> getPieceInAttackers(Index,[X,Y]),removeAttacker(Index);
+	 Case = '_D_' -> getPieceInDefenders(Index,[X,Y]),removeDefender(Index);
+	 Case = '_R_' -> removeDefender(0)),
+	setCaseOnBoard(X,Y,'___').
 
-removePiece(X,Y) :- 
-	getCaseOnBoard(X,Y,E),
-	E = '_A_' , attackers(Att),
-	nth0(Indice,Def,[X|Y]),
-	remove(Indice,Att,NewAtt),
-	updateAttackers(NewAtt));
-removePiece(X,Y) :- 
-	getCaseOnBoard(X,Y,E)
-	(E = '_D_' ; E = '_R_'),
+removeAttacker(Index):-
+	attackers(Att),
+	remove(Index,Att,NewAtt),
+	updateAttackers(NewAtt).
+	
+removeDefender(Index):-
 	defenders(Def),
-	nth0(Indice,Def,[X|Y]),
-	remove(Indice,Def,NewAtt),
-	updateAttackers(NewAtt)).
-removePiece(X,Y).	
+	remove(Index,Def,NewDef),
+	updateDefenders(NewDef).	
 
 updateAttackers(List):- resetAttackers, assert(attackers(List)).
 updateDefenders(List):- resetDefenders, assert(defenders(List)).

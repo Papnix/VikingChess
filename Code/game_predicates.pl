@@ -25,7 +25,7 @@ doKill([HE|TE], [HA|TA], Pawn) :-
     getCoord(HA, XA, YA),
     ((getCaseOnBoard(XE, YE, E),
     getCaseOnBoard(XA, YA, A),
-    ((execute(Pawn, E, A), setCaseOnBoard(XE, YE, '___'));true));true),
+    ((execute(Pawn, E, A), removePieceOnBoard(XE, YE));true));true),
     doKill(TE, TA, Pawn).
 
 kill(X, Y) :- 

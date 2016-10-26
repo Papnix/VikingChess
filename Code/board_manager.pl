@@ -16,14 +16,22 @@ createAndSetupBoard(Size) :- createBoard(Size), setupBoard(Size).
 setupBoard(Size) :- setCitadels(Size), setPieces(Size).
 
 setCitadels(Size) :-
-	setElmt(0,0,'_X_'),
+	setCaseOnBoard(0,0,'_X_'),
 	Var is Size - 1,
 	Middle is Var / 2,
-	setElmt(0,Var,'_X_'),
-	setElmt(Middle,Middle,'_X_'),
-	setElmt(Var,0,'_X_'),
-	setElmt(Var,Var,'_X_').
-
+	setCaseOnBoard(0,Var,'_X_'),
+	setCaseOnBoard(Middle,Middle,'_X_'),
+	setCaseOnBoard(Var,0,'_X_'),
+	setCaseOnBoard(Var,Var,'_X_').
+	
+initListAttDef:-
+	resetAttackers,
+	resetDefenders,
+    length(ListAtt,16),
+    length(ListDef,9),
+    assert(attackers(ListAtt)),
+    assert(defenders(ListDef)).
+	
 setPieces(Size) :-
     Width is Size - 1,
     Middle is Width / 2,
@@ -33,76 +41,57 @@ setPieces(Size) :-
     P3 is Middle,
     P4 is Middle + 1,
     
-    length(ListAtt,16),
-    length(ListDef,9),
+	initListAttDef,
     
-    assert(attackers(ListAtt)),
-    assert(defenders(ListDef)),
-    
-    setElmt(0,P2,'_A_'),
-    setPieceInAttackers(0,[0,P2]),
-    setElmt(0,P3,'_A_'),
-    setPieceInAttackers(1,[0,P3]),
-    setElmt(1,P3,'_A_'),
-    setPieceInAttackers(2,[1,P3]),
-    setElmt(0,P4,'_A_'),
-    setPieceInAttackers(3,[0,P4]),
-	
-	setElmt(P2,0,'_A_'),
-    setPieceInAttackers(4,[P2,0]),
-    setElmt(P3,0,'_A_'),
-    setPieceInAttackers(5,[P3,0]),
-    setElmt(P3,1,'_A_'),
-    setPieceInAttackers(6,[P3,1]),
-    setElmt(P4,0,'_A_'),
-    setPieceInAttackers(7,[P4,0]),
-	
-	setElmt(Width,P2,'_A_'),
-    setPieceInAttackers(8,[Width,P2]),
-    setElmt(Width,P3,'_A_'),
-    setPieceInAttackers(9,[Width,P3]),
-    setElmt(Offset,P3,'_A_'),
-    setPieceInAttackers(10,[Offset,P3]),
-    setElmt(Width,P4,'_A_'),
-    setPieceInAttackers(11,[Width,P4]),
-	
-	setElmt(P2,Width,'_A_'),
-    setPieceInAttackers(12,[P2,Width]),
-    setElmt(P3,Width,'_A_'),
-    setPieceInAttackers(13,[P3,Width]),
-    setElmt(P3,Offset,'_A_'),
-    setPieceInAttackers(14,[P3,Offset]),
-    setElmt(P4,Width,'_A_'),
-    setPieceInAttackers(15,[P4,Width]),
+    setPieceOnBoard(0,[0,P2],'_A_'),
+    setPieceOnBoard(1,[0,P3],'_A_'),
+    setPieceOnBoard(2,[1,P3],'_A_'),
+    setPieceOnBoard(3,[0,P4],'_A_'),
+    setPieceOnBoard(4,[P2,0],'_A_'),
+    setPieceOnBoard(5,[P3,0],'_A_'),
+    setPieceOnBoard(6,[P3,1],'_A_'),
+    setPieceOnBoard(7,[P4,0],'_A_'),
+    setPieceOnBoard(8,[Width,P2],'_A_'),
+    setPieceOnBoard(9,[Width,P3],'_A_'),
+    setPieceOnBoard(10,[Offset,P3],'_A_'),
+    setPieceOnBoard(11,[Width,P4],'_A_'),
+    setPieceOnBoard(12,[P2,Width],'_A_'),
+    setPieceOnBoard(13,[P3,Width],'_A_'),
+    setPieceOnBoard(14,[P3,Offset],'_A_'),
+    setPieceOnBoard(15,[P4,Width],'_A_'),
     
     Pos_D_1 is Middle + 1,
     Pos_D_2 is Middle + 2,
     Neg_D_1 is Middle - 1,
     Neg_D_2 is Middle - 2,
 	
-	setElmt(Middle,Middle,'_R_'),
-    setPieceInDefenders(0,[Middle,Middle]),
-    setElmt(Pos_D_1,Middle,'_D_'),
-    setPieceInDefenders(1,[Pos_D_1,Middle]),
-    setElmt(Pos_D_2,Middle,'_D_'),
-    setPieceInDefenders(2,[Pos_D_2,Middle]),
-    setElmt(Neg_D_1,Middle,'_D_'),
-    setPieceInDefenders(3,[Neg_D_1,Middle]),
-    setElmt(Neg_D_2,Middle,'_D_'),
-    setPieceInDefenders(4,[Neg_D_2,Middle]),
-	
-	setElmt(Middle,Pos_D_1,'_D_'),
-    setPieceInDefenders(5,[Middle,Pos_D_1]),
-    setElmt(Middle,Pos_D_2,'_D_'),
-    setPieceInDefenders(6,[Middle,Pos_D_2]),
-    setElmt(Middle,Neg_D_1,'_D_'),
-    setPieceInDefenders(7,[Middle,Neg_D_1]),
-    setElmt(Middle,Neg_D_2,'_D_'),
-    setPieceInDefenders(8,[Middle,Neg_D_2]).
+    setPieceOnBoard(0,[Middle,Middle],'_R_'),
+    setPieceOnBoard(1,[Pos_D_1,Middle],'_D_'),
+    setPieceOnBoard(2,[Pos_D_2,Middle],'_D_'),
+    setPieceOnBoard(3,[Neg_D_1,Middle],'_D_'),
+    setPieceOnBoard(4,[Neg_D_2,Middle],'_D_'),
+    setPieceOnBoard(5,[Middle,Pos_D_1],'_D_'),
+    setPieceOnBoard(6,[Middle,Pos_D_2],'_D_'),
+    setPieceOnBoard(7,[Middle,Neg_D_1],'_D_'),
+    setPieceOnBoard(8,[Middle,Neg_D_2],'_D_').
 	
 % ------------------------------------------------------------------------------------------------------------------------------------------------- %
 % - Gestion Listes pions -------------------------------------------------------------------------------------------------------------------------- %
 
+% A utiliser pour bouger les pièces
+updatePieceOnBoard([Old_X,Old_Y],[X,Y]):-
+	getCaseOnBoard(Old_X,Old_Y,Case),
+	(Case = '_A_' -> updatePieceInAttackers([Old_X,Old_Y],[X,Y]),setCaseOnBoard(X,Y,'_A_');
+	 Case = '_D_' -> updatePieceInDefenders([Old_X,Old_Y],[X,Y]),setCaseOnBoard(X,Y,'_D_');
+	 Case = '_R_' -> updatePieceInDefenders([Old_X,Old_Y],[X,Y]),setCaseOnBoard(X,Y,'_R_')),
+	setCaseOnBoard(Old_X,Old_Y,'___').
+
+setPieceOnBoard(Index,[X,Y],CharacterToDisplay):-
+	(CharacterToDisplay = '_A_' -> setPieceInAttackers(Index,[X,Y]),setCaseOnBoard(X,Y,CharacterToDisplay);
+	 CharacterToDisplay = '_D_' -> setPieceInDefenders(Index,[X,Y]),setCaseOnBoard(X,Y,CharacterToDisplay);
+	 CharacterToDisplay = '_R_' -> setPieceInDefenders(Index,[X,Y]),setCaseOnBoard(X,Y,CharacterToDisplay)).
+	
+% -----
 setPieceInAttackers(Indice,Piece) :- 
 	attackers(List), 
 	replace(List,Indice,Piece,NewList), 
@@ -110,10 +99,8 @@ setPieceInAttackers(Indice,Piece) :-
 	
 updatePieceInAttackers([Old_X,Old_Y],[X,Y]):-
 	attackers(List), 
-	update([Old_X,Old_Y],List, NewList, [X,Y]), 
-	updateAttackers(NewList),
-	setElmt(Old_X,Old_Y,'___'),
-	setElmt(X,Y,'_A_').
+	update([Old_X,Old_Y],List, NewList, [X|Y]), 
+	updateAttackers(NewList).
 	
 getPieceInAttackers(Indice,Piece) :- 
 	attackers(List), 
@@ -125,7 +112,7 @@ setPieceInDefenders(Indice,Piece) :-
 	replace(List,Indice,Piece,NewList), 
 	updateDefenders(NewList).
 	
-updatePieceInDefenders([Old_X,Old_Y],[X,Y]):- 
+updatePieceInDefenders([Old_X|Old_Y],[X|Y]):- 
 	defenders(List), 
 	update(OldPiece, List, NewList, NewPiece), 
 	updateDefenders(NewList).
@@ -138,14 +125,14 @@ getPieceInDefenders(Indice,Piece) :-
 removePiece(X,Y) :- 
 	getCaseOnBoard(X,Y,E),
 	E = '_A_' , attackers(Att),
-	nth0(Indice,Def,[X,Y]),
+	nth0(Indice,Def,[X|Y]),
 	remove(Indice,Att,NewAtt),
 	updateAttackers(NewAtt));
 removePiece(X,Y) :- 
 	getCaseOnBoard(X,Y,E)
 	(E = '_D_' ; E = '_R_'),
 	defenders(Def),
-	nth0(Indice,Def,[X,Y]),
+	nth0(Indice,Def,[X|Y]),
 	remove(Indice,Def,NewAtt),
 	updateAttackers(NewAtt)).
 removePiece(X,Y).	

@@ -12,9 +12,6 @@ displayBoard :- board(Board), printBoard(Board), writeln('\n\n').
 % ------------------------------------------------------------------------------------------------------------------------------------------------- %
 
 % - Placement pièces sur plateau ------------------------------------------------------------------------------------------------------------------ %
-
-setElmt(X, Y, E) :- 
-	setCaseOnBoard(X, Y, E).
 	
 getCaseOnBoard(X, Y, E) :- board(Board), nth0(Y, Board, L), nth0(X, L, E).
 setCaseOnBoard(X, Y, E) :- board(Board), nth0(Y, Board, L), replace(L, X, E, NewL), replace(Board, Y, NewL, NewBoard), applyIt(NewBoard). 

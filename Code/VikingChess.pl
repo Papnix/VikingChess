@@ -14,14 +14,13 @@ initGame(Size) :- reset, assert(size(Size)), createAndSetupBoard(Size), displayB
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test :- 
-	remove(2,[0,1,2,3,4,5],A),
-	printList(A).
-
 testMove :-
 	init(13),
-	setElmt(6,6, '_R_'), 
-	setElmt(6,5, '_D_'), 
+	initListAttDef,
+	setCaseOnBoard(6,6,'_R_'),
+    setPieceInDefenders(0,[6,6]),
+    setCaseOnBoard(6,5,'_D_'),
+    setPieceInDefenders(1,[6,5]),
 	displayBoard, 
 	move(6,6, 'S', 2), 
 	displayBoard, 
@@ -32,32 +31,45 @@ testMove :-
 	move(6,8, 'E', 3), 
 	displayBoard.
 
-testCollision:-
+testCollision:- % Doit renvoyer false après 3 affichages.
 	init(13),
-	setElmt(6,6, '_R_'), 
-	setElmt(6,5, '_D_'),
+	initListAttDef,
+	setCaseOnBoard(6,6,'_R_'),
+    setPieceInDefenders(0,[6,6]),
+    setCaseOnBoard(6,5,'_D_'),
+    setPieceInDefenders(1,[6,5]),
 	displayBoard, 
 	move(6,5, 'S', 3), 
 	displayBoard, 
 	move(6,6, 'S', 5),
 	displayBoard, 
 	move(6,5, 'S', 1), 
-	displayBoard. 
+	displayBoard,
+	writeln('Test failure : expected false').
+testCollision:- writeln('Test success : expected prolog return false').
 
 testChange :-
 	init(9),
-	setElmt(2,3,'_R_'), 
+	setCaseOnBoard(2,3,'_R_'), 
 	displayBoard.
 
 testCombat :- 
 	init(9),
-    setElmt(3, 3, '_D_'), 
-    setElmt(3, 4, '_A_'),
-    setElmt(2, 3, '_A_'),
-    setElmt(4, 3, '_A_'),
-    setElmt(1, 3, '_D_'),
-    setElmt(5, 3, '_D_'),
-    setElmt(2, 5, '_D_'),
+	initListAttDef,
+    setCaseOnBoard(3, 3, '_D_'),
+		setPieceInDefenders(0,[3,3]),	
+    setCaseOnBoard(3, 4, '_A_'),
+		setPieceInDefenders(0,[3,3]),
+    setCaseOnBoard(2, 3, '_A_'),
+		setPieceInDefenders(0,[3,3]),
+    setCaseOnBoard(4, 3, '_A_'),
+		setPieceInDefenders(0,[3,3]),
+    setCaseOnBoard(1, 3, '_D_'),
+		setPieceInDefenders(0,[3,3]),
+    setCaseOnBoard(5, 3, '_D_'),
+		setPieceInDefenders(0,[3,3]),
+    setCaseOnBoard(2, 5, '_D_'),
+		setPieceInDefenders(0,[3,3]),
     displayBoard,
     move(2,5, 'E', 1),
     displayBoard.
@@ -91,10 +103,21 @@ testUpdatePiecesAtt :-
     writeln('\n'),
 	writeln('\n Time to update ! \n'),
 	getPieceInAttackers(2,X),
-	updatePieceInAttackers(X,[3,3]),
+	updatePieceOnBoard(X,[3,3]),
 	displayBoard,
 	writeln('\n'),
 	attackers(NewAtt),
     printList(NewAtt).
+	
+launchAllTests :-
+	writeln('=== testMove'),testMove,
+	writeln('=== testChange'),testChange,
+	writeln('=== testCombat'),testCombat,
+	writeln('=== testPlayerChange'),testPlayerChange,
+	writeln('=== testListAttDef'),testListAttDef([100,100,100,100]),
+	writeln('=== testCreationList'),testCreationList,
+	writeln('=== testUpdatePiecesAtt'),testUpdatePiecesAtt,
+	writeln('=== testCollision'),testCollision.
+    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

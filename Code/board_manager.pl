@@ -3,6 +3,7 @@
 :- dynamic defenders/1. % Le roi se trouve en tête de liste
 
 % - Creation plateau ------------------------------------------------------------------------------------------------------------------------------ %
+
 /* 
 * populateList : Permet de remplir le plateau de jeu avec des cases vides représentées par '___'
 */
@@ -21,8 +22,10 @@ createGrid([H|T],Size) :- length(H,Size) , populateList(H), createGrid(T,Size).
 * @param : Size la longueur et la largeur du plateau
 */
 createBoard(Size) :- length(Board,Size), createGrid(Board,Size),assert(board(Board)).
+
 % ------------------------------------------------------------------------------------------------------------------------------------------------- %
 % - Mise en place plateau ------------------------------------------------------------------------------------------------------------------------- %
+
 /* 
 * createAndSetupBoard : Créer le plateau et place les pions
 */
@@ -129,6 +132,7 @@ setPieceOnBoard(Index,[X,Y],CharacterToDisplay):-
 	 CharacterToDisplay = '_R_' -> setPieceInDefenders(Index,[X,Y]),setCaseOnBoard(X,Y,CharacterToDisplay)).
 	
 % -----
+
 /*
 *	setPieceInAttackers : Uniquement appellé à l'initialisation Place un pion dans la liste des attaquants
 *	@param: Indice -> index auquel sera rangé la pièce dans le tableau des attaquants
@@ -159,6 +163,7 @@ getPieceInAttackers(Indice,Piece) :-
 	nth0(Indice, List, Piece).
 	
 % -----	
+
 /*
 * Equivalent aux prédicats pour les attaquants (voir plus haut)
 */
@@ -175,7 +180,9 @@ updatePieceInDefenders([Old_X,Old_Y],[X,Y]):-
 getPieceInDefenders(Indice,Piece) :-
 	defenders(List),
 	nth0(Indice, List, Piece).
+	
 % -----
+
 /*
 *	removePieceOnBoard : Enlève une pièce du plateau (graphique) et de la liste à laquelle il appartient
 *	@param: X,Y -> coordonnées de la pièce
@@ -218,4 +225,3 @@ updateDefenders(List):- resetDefenders, assert(defenders(List)).
 */
 resetAttackers :- findall(_,retract(attackers(_)),_).
 resetDefenders :- findall(_,retract(defenders(_)),_).
-% ------------------------------------------------------------------------------------------------------------------------------------------------- %

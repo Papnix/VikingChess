@@ -73,10 +73,10 @@ testRemovePiece:-
 testCombat :- 
 	init(9),
 	initListAttDef,
-	setPieceOnBoard(0,[3,3],'_A_'),
+	setPieceOnBoard(0,[3,3],'_D_'),
 	setPieceOnBoard(1,[3,4],'_A_'),
 	setPieceOnBoard(2,[2,3],'_A_'),
-	setPieceOnBoard(1,[4,3],'_D_'),	
+	setPieceOnBoard(1,[4,3],'_A_'),	
 	setPieceOnBoard(2,[1,3],'_D_'),
 	setPieceOnBoard(3,[5,3],'_D_'),
 	setPieceOnBoard(4,[2,5],'_D_'),	

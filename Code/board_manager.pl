@@ -1,5 +1,6 @@
+% Listes de liste de la forme [[x1, y1],[x2,y2]] représentant les coordonnées des pions
 :- dynamic attackers/1.
-:- dynamic defenders/1.
+:- dynamic defenders/1. % Le roi se trouve en tête de liste
 
 % - Creation plateau ------------------------------------------------------------------------------------------------------------------------------ %
 

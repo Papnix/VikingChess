@@ -5,6 +5,7 @@
 :- consult(board_manager).
 :- consult(utilities).
 :- consult(game_predicates).
+:- consult(defensive_ai).
 
 %%%%% init game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

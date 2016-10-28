@@ -8,25 +8,37 @@
 
 
 %%%%% init game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-/*
-*	init : Permet de créer un plateau vide
-*	@param: Size -> Longueur & Largeur du plateau
-*/
+
+%	init : Permet de créer un plateau vide
+%	@param: Size -> Longueur & Largeur du plateau
+
 init(Size) :- reset, assert(size(Size)), createBoard(Size), displayBoard.
 
-/*
-*	initGame : Permet de créer un plateau et de le préparer au jeu, disposition des pions.
-*	@param: Size -> Longueur & Largeur du plateau
-*/
+%	initGame : Permet de créer un plateau et de le préparer au jeu, disposition des pions.
+%	@param: Size -> Longueur & Largeur du plateau
+
 initGame(Size) :- reset, assert(size(Size)), createAndSetupBoard(Size), displayBoard.
 
+play(Size):-  
+			initGame(9),
+			gameLoop('A'),
 
+gameLoop(CurrentPlayer):-
+			write('New turn for:'), writeln(Player),
+    		board(Board), % instanciate the board from the knowledge base 
+       	    displayBoard, % print it
+            ia(Board, Move,Player), % ask the AI for a move, that is, an index for the Player 
+    	    playMove(Board,Move,NewBoard,Player), % Play the move and get the result in a new Board
+		    applyIt(Board, NewBoard), % Remove the old board from the KB and store the new one
+    	    changePlayer(Player,NextPlayer), % Change the player before next turn
+            play(NextPlayer). % next turn!
+			
+			
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/*
-*	testMove : Test les déplacements des pions	
-*/
+
+%	testMove : Test les déplacements des pions	
 testMove :-
 	init(13),
 	initListAttDef,
@@ -44,9 +56,8 @@ testMove :-
 	move(6,8, 'E', 3), 
 	displayBoard.
 
-/*
-*	testCollision : Doit renvoyer false après 3 affichages.	
-*/
+
+%	testCollision : Doit renvoyer false après 3 affichages.	
 testCollision:- 
 	init(13),
 	initListAttDef,
@@ -63,11 +74,10 @@ testCollision:-
 	displayBoard,
 	writeln('Test failure : expected false after 3 printboard').
 
-/*
-*	testRemovePiece : 
-*		Doit enlever le roi, un attaquant et un défenseur
-*		L'affichage des listes montre cette différence comme la visualisation du plateau
-*/
+
+%	testRemovePiece : 
+%		Doit enlever le roi, un attaquant et un défenseur
+%		L'affichage des listes montre cette différence comme la visualisation du plateau
 testRemovePiece:-
 	initGame(13),
 	attackers(PreAtt),
@@ -85,10 +95,9 @@ testRemovePiece:-
 	printList(PreDef),
 	printList(PostDef).
 
-/*
-*	testCombat : 
-*		Doit tuer la pièce 'attaquant' cernée.
-*/	
+
+%	testCombat : 
+%		Doit tuer la pièce 'attaquant' cernée.
 testCombat :- 
 	init(9),
 	initListAttDef,
@@ -103,20 +112,17 @@ testCombat :-
     move(2,5,'E', 1),
     displayBoard.
 
-/*
-*	testPlayerChange : 
-*		Fait changer le joueur en train de jouer
-*/
+%	testPlayerChange : 
+%		Fait changer le joueur en train de jouer
 testPlayerChange:- 
 	assert(currentPlayer('D')), 
 	changePlayer, 
 	currentPlayer(Player), 
 	write(Player).
 
-/*
-*	testListAttDef : 
-*		Doit renvoyer des listes de variables non instanciée excepté pour l'index 1 dans les attaquants et 3 dans les defenseurs
-*/
+
+%	testListAttDef : 
+%		Doit renvoyer des listes de variables non instanciée excepté pour l'index 1 dans les attaquants et 3 dans les defenseurs
 testListAttDef:-
 	initListAttDef,
     setPieceInAttackers(1,[9,9]),
@@ -130,10 +136,8 @@ testListAttDef:-
     defenders(Def),
     printList(Def).
   
-/*
-*	testCreationList : 
-*		Vérifie que les listes sont bien instanciées
-*/  
+%	testCreationList : 
+%		Vérifie que les listes sont bien instanciées  
 testCreationList :-
     initGame(13),
     attackers(Att),
@@ -141,10 +145,9 @@ testCreationList :-
     printList(Att),
     printList(Def).
 
-/*
-*	testUpdatePiecesAtt : 
-*		Test la mise à jour de pièce et la synchro data + affichage
-*/ 	
+
+%	testUpdatePiecesAtt : 
+%		Test la mise à jour de pièce et la synchro data + affichage	
 testUpdatePiecesAtt :-
     initGame(13),
     attackers(Att),

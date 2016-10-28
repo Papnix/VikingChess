@@ -11,24 +11,18 @@
 
 %	init : Permet de créer un plateau vide
 %	@param: Size -> Longueur & Largeur du plateau
+
 init(Size) :- reset, assert(size(Size)), createBoard(Size), displayBoard.
 
 %	initGame : Permet de créer un plateau et de le préparer au jeu, disposition des pions.
 %	@param: Size -> Longueur & Largeur du plateau
+
 initGame(Size) :- reset, assert(size(Size)), createAndSetupBoard(Size), displayBoard.
-
-play:-  
-			initGame(9),
-			gameLoop('A').
-
-gameLoop(CurrentPlayer):-
-			write('New turn for:'), writeln(CurrentPlayer),
-            callAI(Move,Player), % ask the AI for a move, that is, an index for the Player 
-    	    displayBoard,
-            gameLoop(NextPlayer). % next turn!
-				
+			
+			
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %	testMove : Test les déplacements des pions	
 testMove :-

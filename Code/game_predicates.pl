@@ -148,7 +148,7 @@ moveO(X, Y, NbCase):-
 % Déplace la pièce de coordonnées (X,Y) de 'NbCase' cases dans la direction 'Dir'. Les collisions sont vérifiées.
 % 'Dir' peut prendre les valeurs 'N', 'S', 'E' ou 'O'.
 move(X, Y, Dir, NbCase):-
-	NbCase > 0,
+%	NbCase > 0,
 	getCaseOnBoard(X, Y, E),
 	not(E = '___'),
 	(Dir = 'N' -> moveN(X, Y, NbCase);

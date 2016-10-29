@@ -5,6 +5,8 @@
 :- consult(board_manager).
 :- consult(utilities).
 :- consult(game_predicates).
+:- consult(ia_Defence).
+:- consult(ia_Play).
 
 
 %%%%% init game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,7 +21,28 @@ init(Size) :- reset, assert(size(Size)), createBoard(Size), displayBoard.
 
 initGame(Size) :- reset, assert(size(Size)), createAndSetupBoard(Size), displayBoard.
 			
-			
+play:-
+	initGame(9),
+	assert(currentPlayer('A')),
+	gameloop.	
+
+gameloop:- 
+	currentPlayer(Player),
+	write('New turn for:'),	writeln(Player),
+    callAI, % appel à l'IA du Player 
+    displayBoard,
+	changePlayer,
+    gameloop.
+		
+gameloop:- writeln('- Fin du jeu -').
+
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Appel des IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	callAI:-
+		currentPlayer(Player),
+		(Player = 'A' -> read(X),read(Y),read(D),read(N),move(X,Y,D,N) ; runAI_Defence).
+	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

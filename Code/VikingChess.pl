@@ -5,6 +5,8 @@
 :- consult(board_manager).
 :- consult(utilities).
 :- consult(game_predicates).
+:- consult(ia_Defence).
+:- consult(ia_Play).
 
 
 %%%%% init game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,7 +21,28 @@ init(Size) :- reset, assert(size(Size)), createBoard(Size), displayBoard.
 
 initGame(Size) :- reset, assert(size(Size)), createAndSetupBoard(Size), displayBoard.
 			
-			
+play:-
+	initGame(9),
+	assert(currentPlayer('A')),
+	gameloop.	
+
+gameloop:- 
+	currentPlayer(Player),
+	write('New turn for:'),	writeln(Player),
+    callAI, % appel à l'IA du Player 
+    displayBoard,
+	changePlayer,
+    gameloop.
+		
+gameloop:- writeln('- Fin du jeu -').
+
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Appel des IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	callAI:-
+		currentPlayer(Player),
+		(iaPhase1Agg; iaPhase2).
+	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -178,8 +201,13 @@ testAttackersDead :-
 	length(ListAtk,0),
 	assert(attackers(ListAtk)),
     checkAttackersDead.	
-	
+
+testTest:-initGame(13), assert(currentPlayer('A')), move(0,5,'E', 5), displayBoard, playTest.
+
+playTest:-(not(iaPhase1Agg)->iaPhase2; !), displayBoard, changePlayer, sleep(5), playTest.
+
 launchAllTests :-
+
 	writeln('=== testMove'),testMove,
 	writeln('=== testCombat'),testCombat,
 	writeln('=== testRemovePiece'),testRemovePiece,

@@ -5,28 +5,49 @@
 :- consult(board_manager).
 :- consult(utilities).
 :- consult(game_predicates).
+:- consult(ia_Defence).
+:- consult(ia_Play).
 
 
 %%%%% init game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-/*
-*	init : Permet de créer un plateau vide
-*	@param: Size -> Longueur & Largeur du plateau
-*/
+
+%	init : Permet de créer un plateau vide
+%	@param: Size -> Longueur & Largeur du plateau
+
 init(Size) :- reset, assert(size(Size)), createBoard(Size), displayBoard.
 
-/*
-*	initGame : Permet de créer un plateau et de le préparer au jeu, disposition des pions.
-*	@param: Size -> Longueur & Largeur du plateau
-*/
+%	initGame : Permet de créer un plateau et de le préparer au jeu, disposition des pions.
+%	@param: Size -> Longueur & Largeur du plateau
+
 initGame(Size) :- reset, assert(size(Size)), createAndSetupBoard(Size), displayBoard.
+			
+play:-
+	initGame(9),
+	assert(currentPlayer('A')),
+	gameloop.	
 
+gameloop:- 
+	currentPlayer(Player),
+	write('New turn for:'),	writeln(Player),
+    callAI, % appel à l'IA du Player 
+    displayBoard,
+	changePlayer,
+    gameloop.
+		
+gameloop:- writeln('- Fin du jeu -').
 
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Appel des IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	callAI:-
+		currentPlayer(Player),
+		(Player = 'A' -> read(X),read(Y),read(D),read(N),move(X,Y,D,N) ; runAI_Defence).
+	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/*
-*	testMove : Test les déplacements des pions	
-*/
+
+%	testMove : Test les déplacements des pions	
 testMove :-
 	init(13),
 	initListAttDef,
@@ -44,9 +65,8 @@ testMove :-
 	move(6,8, 'E', 3), 
 	displayBoard.
 
-/*
-*	testCollision : Doit renvoyer false après 3 affichages.	
-*/
+
+%	testCollision : Doit renvoyer false après 3 affichages.	
 testCollision:- 
 	init(13),
 	initListAttDef,
@@ -63,11 +83,10 @@ testCollision:-
 	displayBoard,
 	writeln('Test failure : expected false after 3 printboard').
 
-/*
-*	testRemovePiece : 
-*		Doit enlever le roi, un attaquant et un défenseur
-*		L'affichage des listes montre cette différence comme la visualisation du plateau
-*/
+
+%	testRemovePiece : 
+%		Doit enlever le roi, un attaquant et un défenseur
+%		L'affichage des listes montre cette différence comme la visualisation du plateau
 testRemovePiece:-
 	initGame(13),
 	attackers(PreAtt),
@@ -85,10 +104,9 @@ testRemovePiece:-
 	printList(PreDef),
 	printList(PostDef).
 
-/*
-*	testCombat : 
-*		Doit tuer la pièce 'attaquant' cernée.
-*/	
+
+%	testCombat : 
+%		Doit tuer la pièce 'attaquant' cernée.
 testCombat :- 
 	init(9),
 	initListAttDef,
@@ -103,20 +121,17 @@ testCombat :-
     move(2,5,'E', 1),
     displayBoard.
 
-/*
-*	testPlayerChange : 
-*		Fait changer le joueur en train de jouer
-*/
+%	testPlayerChange : 
+%		Fait changer le joueur en train de jouer
 testPlayerChange:- 
 	assert(currentPlayer('D')), 
 	changePlayer, 
 	currentPlayer(Player), 
 	write(Player).
 
-/*
-*	testListAttDef : 
-*		Doit renvoyer des listes de variables non instanciée excepté pour l'index 1 dans les attaquants et 3 dans les defenseurs
-*/
+
+%	testListAttDef : 
+%		Doit renvoyer des listes de variables non instanciée excepté pour l'index 1 dans les attaquants et 3 dans les defenseurs
 testListAttDef:-
 	initListAttDef,
     setPieceInAttackers(1,[9,9]),
@@ -130,10 +145,8 @@ testListAttDef:-
     defenders(Def),
     printList(Def).
   
-/*
-*	testCreationList : 
-*		Vérifie que les listes sont bien instanciées
-*/  
+%	testCreationList : 
+%		Vérifie que les listes sont bien instanciées  
 testCreationList :-
     initGame(13),
     attackers(Att),
@@ -141,10 +154,9 @@ testCreationList :-
     printList(Att),
     printList(Def).
 
-/*
-*	testUpdatePiecesAtt : 
-*		Test la mise à jour de pièce et la synchro data + affichage
-*/ 	
+
+%	testUpdatePiecesAtt : 
+%		Test la mise à jour de pièce et la synchro data + affichage	
 testUpdatePiecesAtt :-
     initGame(13),
     attackers(Att),
@@ -155,13 +167,55 @@ testUpdatePiecesAtt :-
 	displayBoard,
 	attackers(NewAtt),
     printList(NewAtt).
-	
+
+%	testKingDead : 
+%			
+testKingDead :- 
+	init(9),
+	length(ListDef,1),
+	assert(defenders(ListDef)),
+	length(ListAtk,4),
+	assert(attackers(ListAtk)),
+    setPieceOnBoard(0,[3,3], '_R_'), 
+    setPieceOnBoard(0,[2,3], '_A_'),
+    setPieceOnBoard(1,[3,2], '_A_'),
+    setPieceOnBoard(2,[4,3], '_A_'),
+    setPieceOnBoard(3,[3,4], '_A_'),
+    displayBoard,
+    checkKingLose.
+
+%	testKingCastle : 
+%	
+testKingCastle :- 
+	init(9),
+	length(ListDef,1),
+	assert(defenders(ListDef)),
+	setPieceOnBoard(0,[0,8],'_R_'),
+	displayBoard,
+    checkKingWin.
+
+%	testAttackersDead : 
+%		
+testAttackersDead :- 
+	init(9),
+	length(ListAtk,0),
+	assert(attackers(ListAtk)),
+    checkAttackersDead.	
+
+testTest:-initGame(13), assert(currentPlayer('A')), move(0,5,'E', 5), displayBoard, playTest.
+
+playTest:-(not(iaPhase1Agg)->iaPhase2; !), displayBoard, changePlayer, sleep(5), playTest.
+
 launchAllTests :-
+
 	writeln('=== testMove'),testMove,
 	writeln('=== testCombat'),testCombat,
 	writeln('=== testRemovePiece'),testRemovePiece,
 	writeln('=== testPlayerChange'),testPlayerChange,
 	writeln('=== testListAttDef'),testListAttDef,
 	writeln('=== testCreationList'),testCreationList,
-	writeln('=== testUpdatePiecesAtt'),testUpdatePiecesAtt.
+	writeln('=== testUpdatePiecesAtt'),testUpdatePiecesAtt,
+	writeln('=== testKingDead'),testKingDead,
+	writeln('=== testKingCastle'),testKingCastle,
+	writeln('=== testAttackersDead'),testAttackersDead.
     

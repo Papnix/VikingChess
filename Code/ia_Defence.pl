@@ -9,7 +9,19 @@ decide(X,Y,D,N):-
 		(moveKing(X,Y,D,N)).
 	
 moveKing(XtoPlay,YtoPlay,DirectionToPlay,NbCase):- !.
-	
-getWalkablePath([PosX,PosY],[X,Y]):-
-		board(Board), nth0(X, Board, Column),nth0(Y, Column, Elem),
-		((X == PosX, Y > PosY, Elem == '___')).
+
+
+% Renvoie les coordonnées de la case si elle est accessible (pas d'interet seul, appeller getAllWalkablePath)
+getWalkablePath([PosX,PosY],[X,Y],Direction):-
+		board(Board), getCaseObBoard(X,Y,Elem),
+       	(
+			(Direction == 'N' ,((Elem == '___',X == PosX, Y < PosY); (not(Elem == '___'),X == PosX, Y < PosY ,!, fail)));		
+			(Direction == 'S' ,((Elem == '___',X == PosX, Y > PosY); (not(Elem == '___'),X == PosX, Y > PosY ,!, fail)));
+			(Direction == 'E' ,((Elem == '___',X > PosX, Y == PosY); (not(Elem == '___'),X > PosX, Y == PosY ,!, fail)));
+			(Direction == 'O' ,((Elem == '___',X < PosX, Y == PosY); (not(Elem == '___'),X < PosX, Y == PosY ,!, fail)))
+        ).
+
+% Trouve toutes les cases libres et atteignables dans une direction
+getAllWalkablePath([PosX,PosY],Direction, L) :- findall([X,Y], getWalkablePath([PosX,PosY], [X,Y],Direction), L).
+
+

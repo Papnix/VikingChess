@@ -55,3 +55,5 @@ resetPlayer :- findall(_, retract(currentPlayer(_)),_).
 
 % Efface toutes les assertions
 reset :- resetBoard, resetSize, resetPlayer, resetAttackers, resetDefenders.
+
+abs(X,Y,Result):-X<Y-> Result is Y-X; Result is X-Y.

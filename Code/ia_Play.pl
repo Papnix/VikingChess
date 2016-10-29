@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% IA - Aggressive %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 getOtherPiece(PieceList):-currentPlayer(Player), (Player = 'D' -> attackers(PieceList); Player = 'A' -> defenders(PieceList)).
 
@@ -21,6 +21,9 @@ pieceOp(X,Y, []):-!, fail.
 pieceOp(X, Y, [[Xbis, Ybis|_]|List]):- not(X = Xbis ->(abs(Y,Ybis,ResultY), (Y-Ybis>0 -> move(Xbis, Ybis, 'S', ResultY);move(Xbis, Ybis, 'N', ResultY)));
 	 Y=Ybis ->(abs(X, Xbis, ResultX), (X-Xbis>0 -> move(Xbis, Ybis, 'E', ResultX);move(Xbis, Ybis, 'O', ResultX))))-> pieceOp(X, Y, List); !. 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% IA - Totalement Aleatoire%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % IA - Aleatoire. 
 iaPhase2:-currentPlayer(Player), write(Player), writeln(" - IA aleatoire"), randomMove(Player).
 
@@ -38,3 +41,25 @@ chooseDir(Dir):- DirNum is random(4), (DirNum = 0 -> Dir = 'N';DirNum = 1 -> Dir
 % determine le nombre de case dont la piece ce deplacera.
 choosePiece(ListPiece, X, Y):-length(ListPiece, NbOfPieces), PieceNum is random(NbOfPieces), nth0(PieceNum, ListPiece, [X,Y|_]). 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% IA - pseudo Aleatoire%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -- permet la convergence des pions de l'attaquant vers le roi adverse. %
+
+iaPhase2Agg:-currentPlayer(Player), Player = 'A', attackers(PieceList),
+	      choosePiece(PieceList, X, Y), selectKing(Xroi,Yroi, 0),  
+	      (chooseDirAtt(X,Y,Xroi,Yroi);iaPhase2Agg).
+
+% retrouve les coordonnées X et Y du roi
+selectKing(X,Y, Pos):-getPieceInDefenders(Pos,[Xpiece,Ypiece|_]), getCaseOnBoard(Xpiece,Ypiece, Elmt), (Elmt='_R_', X=Xpiece,Y=Ypiece, !);(NewPos is Pos+1, selectKing(X,Y, NewPos)).
+
+% Permet de verifier dans quelle direction (horizontale ou verticale) faire le deplacement. priorité au mouvement ayant la plus grande amplitude.
+chooseDirAtt(X,Y,Xroi,Yroi):-abs(Xroi, X,ResultX), abs(Yroi, Y,ResultY), ((ResultX<ResultY, (vMove(X,Y,Xroi,Yroi, ResultY);(!,fail)));(hMove(X,Y,Xroi,Yroi, ResultX);vMove(X,Y,Xroi,Yroi, ResultY))).
+
+% mouvement de convergence vers la position du roi (horizontalement).
+hMove(_,_,_,_, 0):-!, fail.
+hMove(X,Y,Xroi,Yroi, NbCase):- (X<Xroi,((move(X,Y, 'E', NbCase), !);( NCase is NbCase-1,hMove(X,Y,Xroi,Yroi, NCase);(!,fail))));((move(X,Y, 'O', NbCase),!);( NCase is NbCase-1, hMove(X,Y,Xroi,Yroi, NCase);(!,fail))).
+
+% mouvement de convergence vers la position du roi (verticalement).
+vMove(_,_,_,_, 0):-!, fail.
+vMove(X,Y,Xroi,Yroi, NbCase):- (Y<Yroi,((move(X,Y, 'S', NbCase), !);( NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail))));((move(X,Y, 'N', NbCase),!);(NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail))). 

@@ -48,9 +48,9 @@ gameloop:- writeln('- Fin du jeu -').
 
 testTest:-initGame(13), assert(currentPlayer('A')), move(0,5,'E', 5), displayBoard, playTest.
 
-playTest:-(not(iaPhase1Agg)->iaPhase2; !), displayBoard, changePlayer, sleep(5), playTest.
+playTest:-(not(iaPhase1Agg)->iaPhase2; !), notrace, displayBoard, changePlayer, sleep(2), playTest.
 
-testPseudoRandomPlay:-initGame(13), pseudoRandomPlay.
+testPseudoRandomPlay:-initGame(13), assert(currentPlayer('A')), pseudoRandomPlay.
 
 pseudoRandomPlay:-iaPhase2Agg, displayBoard,  sleep(2), pseudoRandomPlay.
 

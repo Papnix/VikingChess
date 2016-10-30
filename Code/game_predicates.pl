@@ -3,6 +3,27 @@
 
 %% Contient des prédicats concernant les mécaniques du jeu
 
+% - Game Over ------------------------------------------------------------------------------------------------------------------------------------- %
+	
+displayWinA :- writeln('LES ATTAQUANTS ONT GAGNE ! \n\n').
+displayWinD :- writeln('LES DEFENSEURS ONT GAGNE ! \n\n').
+	
+checkKingCastle(0, 0).
+checkKingCastle(0, Y) :- size(Size), Ywin is Size-1, Y = Ywin.
+checkKingCastle(X, 0) :- size(Size), Xwin is Size-1, X = Xwin.
+checkKingCastle(X, Y) :- size(Size), Win is Size-1, X = Win, Y = Win.
+
+checkAttackers([]).
+checkAttackers([[X|[Y|_]]|T]) :- getCaseOnBoard(X, Y, E), E = '_A_', checkAttackers(T).
+
+checkKingDead(X, Y) :- around(X, Y, List), checkAttackers(List).
+
+checkKingWin :- getPieceInDefenders(0,List), getCoord(List, X, Y), checkKingCastle(X, Y), displayWinD.	
+checkKingLose :- getPieceInDefenders(0,List), getCoord(List, X, Y), write(X),write(' '), writeln(Y), checkKingDead(X, Y), displayWinA.
+checkAttackersDead :- attackers(A), A = [], displayWinD.
+	
+% ------------------------------------------------------------------------------------------------------------------------------------------------- %
+
 
 % - Combats pièces -------------------------------------------------------------------------------------------------------------------------------- %
 
@@ -19,7 +40,14 @@ around(X, Y, List1, List2) :-
     Y2bis is Y-2,
     List1 = [[X, Y1], [X, Y2], [X1, Y], [X2, Y]],
     List2 = [[X, Y1bis], [X, Y2bis], [X1bis, Y], [X2bis, Y]].
-
+	
+around(X, Y, List1) :- 
+    X1 is X+1, 
+    X2 is X-1, 
+    Y1 is Y+1,
+    Y2 is Y-1,
+    List1 = [[X, Y1], [X, Y2], [X1, Y], [X2, Y]].
+	
 % Convertit des coordonnées sous forme de liste en variables séparées. Ex : [X,Y] => X, Y
 getCoord([H|T], X, Y) :- X = H, [H1|_] = T, Y = H1.
 
@@ -120,7 +148,7 @@ moveO(X, Y, NbCase):-
 % Déplace la pièce de coordonnées (X,Y) de 'NbCase' cases dans la direction 'Dir'. Les collisions sont vérifiées.
 % 'Dir' peut prendre les valeurs 'N', 'S', 'E' ou 'O'.
 move(X, Y, Dir, NbCase):-
-	NbCase > 0,
+%	NbCase > 0,
 	getCaseOnBoard(X, Y, E),
 	not(E = '___'),
 	(Dir = 'N' -> moveN(X, Y, NbCase);

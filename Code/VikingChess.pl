@@ -53,7 +53,7 @@ playTest:-(not(iaPhase1Agg)->iaPhase2; !), notrace, displayBoard, changePlayer, 
 testPseudoRandomPlay:-initGame(13), assert(currentPlayer('A')), pseudoRandomPlay.
 
 pseudoRandomPlay:-iaPhase2Agg, displayBoard,  sleep(2), pseudoRandomPlay.
-
+	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

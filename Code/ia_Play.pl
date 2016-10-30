@@ -17,6 +17,7 @@ checkDanger(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player), getCaseOnBoard
 
 opPosition(X, Y, X1, Y1):-NewX is 2*X-X1, NewY is 2*Y-Y1, getOwnPiece(PieceList), pieceOp(NewX, NewY, PieceList). 
 
+
 pieceOp(X,Y, []):-!, fail.
 pieceOp(X, Y, [[Xbis, Ybis|_]|List]):- not(X = Xbis ->(abs(Y,Ybis,ResultY), (Y-Ybis>0 -> move(Xbis, Ybis, 'S', ResultY);move(Xbis, Ybis, 'N', ResultY)));
 	 Y=Ybis ->(abs(X, Xbis, ResultX), (X-Xbis>0 -> move(Xbis, Ybis, 'E', ResultX);move(Xbis, Ybis, 'O', ResultX))))-> pieceOp(X, Y, List); !. 

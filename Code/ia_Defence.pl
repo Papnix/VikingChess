@@ -5,9 +5,8 @@
 
 % Méthode à appeller pour utiliser l'IA
 runAI_Defence:- 
-	(decide(X,Y,D,N), move(X,Y,D,N) ; randomMove('D')).
-
-		
+	(decide(X,Y,D,N); (read(X),read(Y),read(D),read(N))), move(X,Y,D,N).
+	
 decide(X,Y,D,N):-
 	(moveKing(D,N),getPieceInDefenders(0,[X,Y])).
 	
@@ -37,17 +36,16 @@ isPlayableCase([X,Y],ListCase,NbCase):-
 % Calcul le déplacement en nombre de case entre deux positions			
 calculNbCase([X,Y],[ToX,ToY],NbCase):-
 	(abs(ToX,X,Result), Result > 0, NbCase = Result);
-	(abs(ToY,Y,Result), Result > 0, NbCase = Result).
-				
+	(abs(ToY,Y,Result), Result > 0, NbCase = Result).				
 
 % Renvoie les coordonnées de la case si elle est accessible (pas d'interet seul, appeller getAllWalkablePath)
 getWalkablePath([PosX,PosY],[X,Y],Direction):-
 	getCaseOnBoard(X,Y,Elem),
 	(
-		(Direction == 'N' ,((Elem == '___',X == PosX, Y < PosY); (not(Elem == '___'),X == PosX, Y > PosY ,!, fail)));		
-		(Direction == 'S' ,((Elem == '___',X == PosX, Y > PosY); (not(Elem == '___'),X == PosX, Y < PosY ,!, fail)));
-		(Direction == 'E' ,((Elem == '___',X > PosX, Y == PosY); (not(Elem == '___'),X < PosX, Y == PosY ,!, fail)));
-		(Direction == 'O' ,((Elem == '___',X < PosX, Y == PosY); (not(Elem == '___'),X > PosX, Y == PosY ,!, fail)))
+		(Direction == 'N' ,(((Elem == '___';Elem == '_X_'),X == PosX, Y < PosY); (not((Elem == '___';Elem == '_X_')),X == PosX, Y > PosY ,!, fail)));		
+		(Direction == 'S' ,(((Elem == '___';Elem == '_X_'),X == PosX, Y > PosY); (not((Elem == '___';Elem == '_X_')),X == PosX, Y < PosY ,!, fail)));
+		(Direction == 'E' ,(((Elem == '___';Elem == '_X_'),X > PosX, Y == PosY); (not((Elem == '___';Elem == '_X_')),X < PosX, Y == PosY ,!, fail)));
+		(Direction == 'O' ,(((Elem == '___';Elem == '_X_'),X < PosX, Y == PosY); (not((Elem == '___';Elem == '_X_')),X > PosX, Y == PosY ,!, fail)))
 	).
 
 % Trouve toutes les cases libres et atteignables dans une direction

@@ -32,7 +32,7 @@ gameloop:-
     callAI, % appel à l'IA du Player 
     displayBoard,
 	changePlayer,
-    gameloop.
+	(checkForVictory;gameloop).
 		
 gameloop:- writeln('- Fin du jeu -').
 
@@ -41,7 +41,8 @@ gameloop:- writeln('- Fin du jeu -').
 %%%%% Appel des IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	callAI:-
 		currentPlayer(Player),
-		(iaPhase1Agg; iaPhase2).
+		(Player = 'A',(iaPhase1Agg; iaPhase2));
+		runAI_Defence.
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

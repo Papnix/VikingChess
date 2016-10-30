@@ -20,8 +20,11 @@ checkKingDead(X, Y) :- around(X, Y, List), checkAttackers(List).
 
 checkKingWin :- getPieceInDefenders(0,List), getCoord(List, X, Y), checkKingCastle(X, Y), displayWinD.	
 checkKingLose :- getPieceInDefenders(0,List), getCoord(List, X, Y), write(X),write(' '), writeln(Y), checkKingDead(X, Y), displayWinA.
+
 checkAttackersDead :- attackers(A), A = [], displayWinD.
-	
+checkDefendersDead :- defenders(D), D = [], displayWinA.
+
+checkForVictory:- checkKingWin;	checkKingLose;checkAttackersDead;checkDefendersDead.
 % ------------------------------------------------------------------------------------------------------------------------------------------------- %
 
 

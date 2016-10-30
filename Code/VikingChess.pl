@@ -30,6 +30,7 @@ gameloop:-
 	currentPlayer(Player),
 	write('New turn for:'),	writeln(Player),
     callAI, % appel à l'IA du Player 
+	sleep(2),
     displayBoard,
 	changePlayer,
 	(checkForVictory;gameloop).
@@ -43,6 +44,18 @@ gameloop:- writeln('- Fin du jeu -').
 		currentPlayer(Player),
 		(Player = 'A',(iaPhase1Agg; iaPhase2));
 		runAI_Defence.
+
+
+% ---- Test des IA ---- %
+
+testTestIA_Attack:-initGame(13), assert(currentPlayer('A')), move(0,5,'E', 5), displayBoard, playTestIA_Attack.
+
+playTestIA_Attack:-(not(iaPhase1Agg)->iaPhase2; !), notrace, displayBoard, changePlayer, sleep(2), playTestIA_Attack.
+
+testPseudoRandomPlay:-initGame(13), assert(currentPlayer('A')), pseudoRandomPlay.
+
+pseudoRandomPlay:-iaPhase2Agg, displayBoard,  sleep(2), pseudoRandomPlay.
+
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -203,12 +216,8 @@ testAttackersDead :-
 	assert(attackers(ListAtk)),
     checkAttackersDead.	
 
-testTest:-initGame(13), assert(currentPlayer('A')), move(0,5,'E', 5), displayBoard, playTest.
-
-playTest:-(not(iaPhase1Agg)->iaPhase2; !), displayBoard, changePlayer, sleep(5), playTest.
 
 %%%%%% Test IA Defence
-
 % Doit retourner la plus grande distance de déplacement possible (N = 3)
 testMoveKing:-
 	initGame(9),

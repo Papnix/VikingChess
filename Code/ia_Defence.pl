@@ -38,6 +38,7 @@ calculNbCase([X,Y],[ToX,ToY],NbCase):-
 	(abs(ToX,X,Result), Result > 0, NbCase = Result);
 	(abs(ToY,Y,Result), Result > 0, NbCase = Result).				
 
+
 % Renvoie les coordonnées de la case si elle est accessible (pas d'interet seul, appeller getAllWalkablePath)
 getWalkablePath([PosX,PosY],[X,Y],Direction):-
 	getCaseOnBoard(X,Y,Elem),

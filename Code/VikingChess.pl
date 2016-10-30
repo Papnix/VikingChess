@@ -206,6 +206,26 @@ testTest:-initGame(13), assert(currentPlayer('A')), move(0,5,'E', 5), displayBoa
 
 playTest:-(not(iaPhase1Agg)->iaPhase2; !), displayBoard, changePlayer, sleep(5), playTest.
 
+%%%%%% Test IA Defence
+
+% Doit retourner la plus grande distance de déplacement possible (N = 3)
+testMoveKing:-
+	initGame(9),
+	removePieceOnBoard(4,1),
+	removePieceOnBoard(4,2),
+	removePieceOnBoard(4,3),
+	moveKing(DirectionToPlay,NbCase),
+	write('Direction du mouvement (attendu = N) : '), writeln(DirectionToPlay),
+	write('Nombre de case de deplacement (attendu = 3): '), writeln(NbCase),
+	DirectionToPlay = 'N',
+	NbCase = 3 .
+
+testChooseCaseToMoveOn:-
+	chooseCaseToMoveOn([4,4],[[4,5],[4,6],[4,7],[4,7]], MaxNbCase),
+	write('Nombre max attendu : '), writeln('3'),
+	write('Nombre max calcule : '), writeln(MaxNbCase),
+	MaxNbCase = 3 .
+
 launchAllTests :-
 
 	writeln('=== testMove'),testMove,
@@ -217,5 +237,7 @@ launchAllTests :-
 	writeln('=== testUpdatePiecesAtt'),testUpdatePiecesAtt,
 	writeln('=== testKingDead'),testKingDead,
 	writeln('=== testKingCastle'),testKingCastle,
-	writeln('=== testAttackersDead'),testAttackersDead.
+	writeln('=== testAttackersDead'),testAttackersDead,
+	writeln('=== testChooseCaseToMoveOn'),testChooseCaseToMoveOn,
+	writeln('=== testMoveKing'),testMoveKing.
     

@@ -43,7 +43,7 @@ update(OldValue, [A|B],[X|Y], NewValue) :- A = X, update(OldValue,B,Y, NewValue)
 remove(Indice, List, NewList):- nth0(Indice,List,Elmt), delete(List, Elmt, NewList).
 
 % Modifie le joueur actuellement en train de jouer
-changePlayer:- currentPlayer(Player),resetPlayer, Player = 'A' -> assert(currentPlayer('D'));Player = 'D' -> assert(currentPlayer('A')).
+changePlayer:- currentPlayer(Player),resetPlayer, (Player = 'A',assert(currentPlayer('D'))) ; (Player = 'D',assert(currentPlayer('A'))).
 
 % Enregistre le nouveau plateau de jeu comme étant le plateau actuellement utilisé
 applyIt(NewBoard) :- resetBoard, assert(board(NewBoard)).
@@ -52,8 +52,11 @@ applyIt(NewBoard) :- resetBoard, assert(board(NewBoard)).
 resetBoard :- findall(_,retract(board(_)),_).
 resetSize :- findall(_,retract(size(_)),_).
 resetPlayer :- findall(_, retract(currentPlayer(_)),_).
+resetIA_Defence :- findall(_, retract(prefered_Vertical_Direction(_)),_), findall(_, retract(prefered_Horizontal_Direction(_)),_).
 
 % Efface toutes les assertions
-reset :- resetBoard, resetSize, resetPlayer, resetAttackers, resetDefenders.
+reset :- resetBoard, resetSize, resetPlayer, resetAttackers, resetDefenders, resetIA_Defence.
 
 abs(X,Y,Result):-X<Y-> Result is Y-X; Result is X-Y.
+
+

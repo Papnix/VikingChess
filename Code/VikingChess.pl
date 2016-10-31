@@ -30,7 +30,7 @@ gameloop:-
 	currentPlayer(Player),
 	write('New turn for:'),	writeln(Player),
     callAI, % appel à l'IA du Player 
-	sleep(2),
+	sleep(0.5),
     displayBoard,
 	changePlayer,
 	(checkForVictory;gameloop).
@@ -224,11 +224,38 @@ testMoveKing:-
 	removePieceOnBoard(4,1),
 	removePieceOnBoard(4,2),
 	removePieceOnBoard(4,3),
+	displayBoard,
 	moveKing(DirectionToPlay,NbCase),
 	write('Direction du mouvement (attendu = N) : '), writeln(DirectionToPlay),
 	write('Nombre de case de deplacement (attendu = 3): '), writeln(NbCase),
 	DirectionToPlay = 'N',
 	NbCase = 3 .
+	
+testMoveKingAdvanced:-
+	initGame(9),
+	removePieceOnBoard(4,2),
+	removePieceOnBoard(6,4),
+	removePieceOnBoard(2,4),
+	removePieceOnBoard(4,6),
+	displayBoard,
+	(moveKing(DirectionToPlay,NbCase);true),
+	sleep(1),
+	removePieceOnBoard(4,3),
+	removePieceOnBoard(5,4),
+	removePieceOnBoard(4,5),
+	removePieceOnBoard(3,4),
+	displayBoard,
+	getAllWalkablePath([4,4],'N', L_North),
+	write('getAllWalkablePath N : '), printList(L_North),
+	getAllWalkablePath([4,4],'O', L_West),
+	write('getAllWalkablePath O : '), printList(L_West),
+	getAllWalkablePath([4,4],'S', L_South),
+	write('getAllWalkablePath S : '), printList(L_South),
+	getAllWalkablePath([4,4],'E', L_East),
+	write('getAllWalkablePath E : '), printList(L_East).
+
+
+	
 
 testChooseCaseToMoveOn:-
 	chooseCaseToMoveOn([4,4],[[4,5],[4,6],[4,7],[4,7]], MaxNbCase),
@@ -249,5 +276,6 @@ launchAllTests :-
 	writeln('=== testKingCastle'),testKingCastle,
 	writeln('=== testAttackersDead'),testAttackersDead,
 	writeln('=== testChooseCaseToMoveOn'),testChooseCaseToMoveOn,
-	writeln('=== testMoveKing'),testMoveKing.
+	writeln('=== testMoveKing'),testMoveKing,
+	writeln('=== testMoveKingAdvanced'),testMoveKingAdvanced.
     

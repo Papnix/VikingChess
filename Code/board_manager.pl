@@ -170,9 +170,9 @@ getPieceInDefenders(Indice,Piece) :-
 removePieceOnBoard(X,Y):-
 	getCaseOnBoard(X,Y,Case),
 	(
-		(Case = '_A_',getPieceInAttackers(Index,[X,Y]),removeAttacker(Index));
-		(Case = '_D_',getPieceInDefenders(Index,[X,Y]),removeDefender(Index));
-		(Case = '_R_',removeDefender(0))
+		(Case == '_A_',getPieceInAttackers(Index,[X,Y]),removeAttacker(Index));
+		(Case == '_D_',getPieceInDefenders(Index,[X,Y]),removeDefender(Index));
+		(Case == '_R_',removeDefender(0))
 	),
 	setCaseOnBoard(X,Y,'___').
 

@@ -5,53 +5,65 @@
 
 % Méthode à appeller pour utiliser l'IA
 runAI_Defence:- 
-	(decide(X,Y,D,N); (read(X),read(Y),read(D),read(N))), move(X,Y,D,N).
-	
-decide(X,Y,D,N):-
-	(moveKing(D,N),getPieceInDefenders(0,[X,Y])).
-	
-moveKing(DirectionToPlay,NbCase):- 
-	getPieceInDefenders(0,[X,Y]),
+	(
+		getPieceInDefenders(0,[X,Y]),
+		decide(D,N),
+		write('Mouvement prévu : '), write(N),write(' vers '),writeln(D),
+		moveKing(X,Y,D,N)
+	)
+	; 
+	(
+		read(X),read(Y),read(D),read(N),moveKing(X,Y,D,N)
+	).
+		
+decide(DirectionToPlay,NbCase):- 
+	getPieceInDefenders(0,[PosX,PosY]),
 	(
 		% On check les directions privilégiées
 		(
+			%writeln('Pref vertical'),
 			prefered_Vertical_Direction(Dir),
-			getAllWalkablePath([X,Y], Dir, ListCase),
+			getAllWalkablePath([PosX,PosY], Dir, ListCase),
 			not(ListCase == []),
 			DirectionToPlay = Dir
 		)
 		;
 		(
+			%writeln('Pref horizontal'),
 			prefered_Horizontal_Direction(Dir),
-			getAllWalkablePath([X,Y], Dir, ListCase),
+			getAllWalkablePath([PosX,PosY], Dir, ListCase),
 			not(ListCase == []),
 			DirectionToPlay = Dir
 		)
 		;
 		(	% Si aucune direction n'est privilégié, alors on va checker les chemins
-			(	% On ne calcul pas de chemin si les conditions d'avant on échouées sur un "not(ListCase == [])" 
+			(	
+				%writeln('Bloc horizontal'),
+				% On ne calcul pas de chemin si les conditions d'avant on échouées sur un "not(ListCase == [])" 	
 				not(prefered_Horizontal_Direction(Dir)),
 			
 				% On est maintenant sûr qu'il n'y a pas de direction horizontale, on cherche si une direction peut être prise (not(ListCase == []))
-				(getAllWalkablePath([X,Y], 'E', ListCase), not(ListCase == []), updatePrefered_Horizontal_Direction('E'),DirectionToPlay = 'E');
-				(getAllWalkablePath([X,Y], 'O', ListCase), not(ListCase == []), updatePrefered_Horizontal_Direction('O'),DirectionToPlay = 'O')
+				(getAllWalkablePath([PosX,PosY], 'E', ListCase), not(ListCase == []), updatePrefered_Horizontal_Direction('E'),DirectionToPlay = 'E');
+				(getAllWalkablePath([PosX,PosY], 'O', ListCase), not(ListCase == []), updatePrefered_Horizontal_Direction('O'),DirectionToPlay = 'O')
 			)
 			;
 			(
+				%writeln('Bloc vertical'),
 				% De même pour la verticali
 				not(prefered_Vertical_Direction(Dir)),
 							
-				(getAllWalkablePath([X,Y], 'N', ListCase), not(ListCase == []), updatePrefered_Vertical_Direction('N'),DirectionToPlay = 'N');
-				(getAllWalkablePath([X,Y], 'S', ListCase), not(ListCase == []), updatePrefered_Vertical_Direction('S'),DirectionToPlay = 'S')	
+				(getAllWalkablePath([PosX,PosY], 'N', ListCase), not(ListCase == []), updatePrefered_Vertical_Direction('N'),DirectionToPlay = 'N');
+				(getAllWalkablePath([PosX,PosY], 'S', ListCase), not(ListCase == []), updatePrefered_Vertical_Direction('S'),DirectionToPlay = 'S')	
 			)
 		)
 	),
-	chooseCaseToMoveOn([X,Y],ListCase,NbCase).
+	%writeln('Fin decide'),
+	chooseCaseToMoveOn([PosX,PosY],ListCase,NbCase).
 	
 	
 % Détermine la case la plus loin qui peut être jouée sans risque.			
-chooseCaseToMoveOn([X,Y],ListCase, MaxNbCase):-
-	findall(NbCase,isPlayableCase([X,Y],ListCase,NbCase), ListNbCase),
+chooseCaseToMoveOn([PosX,PosY],ListCase, MaxNbCase):-
+	findall(NbCase,isPlayableCase([PosX,PosY],ListCase,NbCase), ListNbCase),
 	max_list(ListNbCase,MaxNbCase).
 
 isPlayableCase([X,Y],ListCase,NbCase):-
@@ -95,7 +107,7 @@ checkSouthPath([PosX,PosY],[X,Y]):-
 		
 checkEastPath([PosX,PosY],[X,Y]):-
 	getCaseOnBoard(X,Y,Elem),
-	(((Elem == '___';Elem == '_X_'),X < PosX, Y == PosY); (not((Elem == '___';Elem == '_X_')),X > PosX, Y == PosY ,!, fail)).
+	(((Elem == '___';Elem == '_X_'),X > PosX, Y == PosY); (not((Elem == '___';Elem == '_X_')),X > PosX, Y == PosY ,!, fail)).
 
 checkWestPath([PosX,PosY],[X,Y]):-
 	board(Board), nth0(Y, Board, L), reverse(L,LReverse),

@@ -151,10 +151,44 @@ moveO(X, Y, NbCase):-
 % Déplace la pièce de coordonnées (X,Y) de 'NbCase' cases dans la direction 'Dir'. Les collisions sont vérifiées.
 % 'Dir' peut prendre les valeurs 'N', 'S', 'E' ou 'O'.
 move(X, Y, Dir, NbCase):-
-%	NbCase > 0,
+	NbCase > 0,
 	getCaseOnBoard(X, Y, E),
 	not(E = '___'),
 	(Dir = 'N' -> moveN(X, Y, NbCase);
 	Dir = 'S' -> moveS(X, Y, NbCase);
 	Dir = 'E' -> moveE(X, Y, NbCase);
 	Dir = 'O' -> moveO(X, Y, NbCase)).
+	
+moveKing(X, Y, Dir, NbCase):-
+	NbCase > 0,
+	getCaseOnBoard(X, Y, E),
+	not(E = '___'),
+	(
+		Dir = 'N',
+		NewY is Y - NbCase,
+		updatePieceOnBoard([X, Y], [X, NewY]),
+		applyKillNextTo(NewX, Y)
+	)
+	;	(
+		Dir = 'S',
+		NewY is Y + NbCase,
+		updatePieceOnBoard([X, Y], [X, NewY]),
+		applyKillNextTo(NewX, Y)
+	)
+	;	(
+		Dir = 'E',
+		NewX is X + NbCase,
+		updatePieceOnBoard([X, Y], [NewX, Y]),
+		applyKillNextTo(NewX, Y)
+	)
+	;	
+	(
+		Dir = 'O',
+		NewX is X - NbCase,
+		updatePieceOnBoard([X, Y], [NewX, Y]),
+		applyKillNextTo(NewX, Y)
+	).
+	
+
+	
+	

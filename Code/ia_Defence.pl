@@ -5,17 +5,15 @@
 
 % Méthode à appeller pour utiliser l'IA
 runAI_Defence:- 
-	(
+		kingEscape;randomMove('D').
+	
+	
+kingEscape:-
 		getPieceInDefenders(0,[X,Y]),
 		decide(D,N),
-		write('Mouvement prévu : '), write(N),write(' vers '),writeln(D),
-		moveKing(X,Y,D,N)
-	)
-	; 
-	(
-		read(X),read(Y),read(D),read(N),moveKing(X,Y,D,N)
-	).
-		
+		moveKing(X,Y,D,N).		
+
+	
 decide(DirectionToPlay,NbCase):- 
 	getPieceInDefenders(0,[PosX,PosY]),
 	(

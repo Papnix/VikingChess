@@ -35,14 +35,13 @@ gameloop:-
 	changePlayer,
 	(checkForVictory;gameloop).
 		
-gameloop:- writeln('- Fin du jeu -').
 
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Appel des IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	callAI:-
 		currentPlayer(Player),
-		(Player = 'A',(iaPhase1Agg; iaPhase2));
+		(Player = 'A', iaPhase2);
 		runAI_Defence.
 
 

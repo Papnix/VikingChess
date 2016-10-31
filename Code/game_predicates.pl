@@ -85,29 +85,29 @@ applyKillNextTo(X, Y) :-
 
 % Vérifie que les cases du plateau de la case (X,Y) à la case (NewX, Y) sont toutes libres (true). Si une case ne l'est pas, renvoie false.
 % X, Y et NewX doivent être des coordonnées valides.
-collisionX(NewX, Y, NewX):-
+reachableX(NewX, Y, NewX):-
 	getCaseOnBoard(NewX,Y,E),
 	E = '___'.
 	
-collisionX(X, Y, NewX):-
+reachableX(X, Y, NewX):-
 	Delta is NewX - X,
 	(Delta > 0 -> Xinc is X + 1;
 	Delta < 0 -> Xinc is X - 1),
 	getCaseOnBoard(Xinc,Y,E),
 	E = '___',
-	collisionX(Xinc, Y,  NewX).
+	reachableX(Xinc, Y,  NewX).
 
-% Voir commentaire de collisionX. Le fonctionnement est le même
-collisionY(X, NewY, NewY):-
+% Voir commentaire de reachableX. Le fonctionnement est le même
+reachableY(X, NewY, NewY):-
 	getCaseOnBoard(X,NewY,E),
 	E = '___'.
 
-collisionY(X, Y, NewY):-
+reachableY(X, Y, NewY):-
 	Delta is NewY - Y,
 	(Delta > 0 -> Yinc is Y + 1; Delta < 0 -> Yinc is Y - 1),
 	getCaseOnBoard(X,Yinc,E),
 	E = '___',
-	collisionY(X, Yinc,  NewY).
+	reachableY(X, Yinc,  NewY).
 
 
 % - Mouvements pièces ----------------------------------------------------------------------------------------------------------------------------- %
@@ -118,7 +118,7 @@ collisionY(X, Y, NewY):-
 moveN(X, Y, NbCase):-
 	NewY is Y - NbCase,
 	NewY >= 0,
-	collisionY(X, Y, NewY),
+	reachableY(X, Y, NewY),
 	updatePieceOnBoard([X, Y], [X, NewY]), 
 	applyKillNextTo(X, NewY).
 	
@@ -127,7 +127,7 @@ moveS(X, Y, NbCase):-
 	NewY is Y + NbCase,
 	size(Size),
 	NewY < Size,
-	collisionY(X, Y, NewY),
+	reachableY(X, Y, NewY),
 	updatePieceOnBoard([X, Y], [X, NewY]), 
 	applyKillNextTo(X, NewY).
 	
@@ -136,7 +136,7 @@ moveE(X, Y, NbCase):-
 	NewX is X + NbCase,
 	size(Size),
 	NewX < Size,
-	collisionX(X, Y, NewX), 
+	reachableX(X, Y, NewX), 
 	updatePieceOnBoard([X, Y], [NewX, Y]),
 	applyKillNextTo(NewX, Y).
 	
@@ -144,7 +144,7 @@ moveE(X, Y, NbCase):-
 moveO(X, Y, NbCase):-
 	NewX is X - NbCase,
 	NewX >= 0, 
-	collisionX(X, Y, NewX),
+	reachableX(X, Y, NewX),
 	updatePieceOnBoard([X, Y], [NewX, Y]),
 	applyKillNextTo(NewX, Y).
 

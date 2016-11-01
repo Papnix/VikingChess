@@ -265,13 +265,15 @@ checkPlaceIsSafe(X, Y, [[_, _|_]|List]):- checkPlaceIsSafe(X,Y,List).
 pieceOp2(_,_,_,_, []):-!.
 pieceOp2(X, Y, Xbase,Ybase, [[X, Ybis|_]|List]):- 
 	not(Ybis == Ybase),
-	( not( reachableY(X,Ybis,Y) );!,fail), 
+	getCaseOnBoard(X, Ybis, Pawn),
+	( not( reachableY(X,Ybis,Y, Pawn) );!,fail), 
 	pieceOp2(X,Y, Xbase,Ybase,List).
 	
 	
 pieceOp2(X, Y, Xbase,Ybase, [[Xbis, Y|_]|List]):- 
 	not(Xbase == Xbis),
-	( not(reachableX(Xbis,Y,X) );!,fail),
+	getCaseOnBoard(Xbis, Y, Pawn),
+	( not(reachableX(Xbis,Y,X, Pawn) );!,fail),
 	pieceOp2(X,Y, Xbase,Ybase,List).
 	
 	

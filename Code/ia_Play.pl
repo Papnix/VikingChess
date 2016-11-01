@@ -1,5 +1,5 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% IA - Aggressive %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% IA - Aggressive %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 getOtherPiece(PieceList):-currentPlayer(Player), (Player = 'D' -> attackers(PieceList); Player = 'A' -> defenders(PieceList)).
 
@@ -17,11 +17,14 @@ checkKillable(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player), getCaseOnBoa
 
 opPosition(X, Y, X1, Y1):-NewX is 2*X-X1, NewY is 2*Y-Y1, getOwnPiece(PieceList), pieceOp(NewX, NewY, PieceList).
 
-pieceOp(X,Y, []):-!, fail.
-pieceOp(X, Y, [[Xbis, Ybis|_]|List]):- not(X = Xbis ,((abs(Y,Ybis,ResultY), (Y-Ybis>0, (move(Xbis, Ybis, 'S', ResultY);move(Xbis, Ybis, 'N', ResultY))));Y=Ybis,(abs(X,Xbis,ResultX), (X-Xbis>0, (move(Xbis, Ybis, 'E', ResultX);move(Xbis, Ybis, 'O', ResultX)))))), pieceOp(X, Y, List). 
+pieceOp(_,_,[]):-!, fail.
+pieceOp(X, Y, [[Xbis, Ybis|_]|List]):-
+	not(X = Xbis,
+		((abs(Y,Ybis,ResultY), (Y-Ybis>0, (move(Xbis, Ybis, 'S', ResultY);move(Xbis, Ybis, 'N', ResultY))));Y=Ybis,(abs(X,Xbis,ResultX), (X-Xbis>0, (move(Xbis, Ybis, 'E', ResultX);move(Xbis, Ybis, 'O', ResultX)))))),
+	pieceOp(X, Y, List). 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% IA - Totalement Aleatoire%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% IA - Totalement Aleatoire %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 iaPhase2:-currentPlayer(Player), write(Player), writeln(" - IA aleatoire"), randomMove(Player).
 
@@ -40,8 +43,8 @@ chooseDir(Dir):- DirNum is random(4), (DirNum = 0 -> Dir = 'N';DirNum = 1 -> Dir
 choosePiece(ListPiece, X, Y):-length(ListPiece, NbOfPieces), PieceNum is random(NbOfPieces), nth0(PieceNum, ListPiece, [X,Y|_]). 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% IA - pseudo Aleatoire - Attaquant %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% IA - pseudo Aleatoire - Attaquant %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -- permet la convergence des pions de l'attaquant vers le roi adverse. -- %
 
 iaPhase2Agg:-currentPlayer(Player), Player = 'A', attackers(PieceList),
@@ -56,11 +59,12 @@ chooseDirAtt(X,Y,Xroi,Yroi):-abs(Xroi, X,ResultX), abs(Yroi, Y,ResultY), ((Resul
 
 % mouvement de convergence vers la position du roi (horizontalement).
 hMove(_,_,_,_, 0):-!, fail.
-hMove(X,Y,Xroi,Yroi, NbCase):- (X<Xroi,((move(X,Y, 'E', NbCase), !);( NCase is NbCase-1,hMove(X,Y,Xroi,Yroi, NCase);(!,fail))));((move(X,Y, 'O', NbCase),!);( NCase is NbCase-1, hMove(X,Y,Xroi,Yroi, NCase);(!,fail))).
+hMove(X,Y,Xroi,Yroi, NbCase):-
+	(X<Xroi,((move(X,Y, 'E', NbCase), !);( NCase is NbCase-1,hMove(X,Y,Xroi,Yroi, NCase);(!,fail)))) ; ((move(X,Y, 'O', NbCase),!);( NCase is NbCase-1, hMove(X,Y,Xroi,Yroi, NCase);(!,fail))).
 
 % mouvement de convergence vers la position du roi (verticalement).
 vMove(_,_,_,_, 0):-!, fail.
-vMove(X,Y,Xroi,Yroi, NbCase):- (Y<Yroi,((move(X,Y, 'S', NbCase), !);( NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail))));((move(X,Y, 'N', NbCase),!);(NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail))). 
+vMove(X,Y,Xroi,Yroi, NbCase):- (Y<Yroi,((move(X,Y, 'S', NbCase), !);( NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail)))) ; ((move(X,Y, 'N', NbCase),!);(NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail))). 
 
 testCkDanger:- initGame(9), assert(currentPlayer('A')), move(0,3,'E',2), move(0,5,'E',2), move(2,3,'O',2), move(2,5,'O',2),displayBoard,isSafe(3,3).
 
@@ -68,6 +72,7 @@ isSafe(X,Y):- around(X,Y,Neighbors, _), checkPlaceIsSafe(X,Y,Neighbors).
 
 % isSafe(X,Y):- setCaseOnBoard(X,Y,'_P_'), around(X,Y,Neighbors, _), checkPlaceIsSafe(X,Y,Neighbors), setCaseOnBoard(X,Y,'___').
 % isSafe(X,Y):- setCaseOnBoard(X,Y,'___'), fail.
+
 
 checkPlaceIsSafe(_,_,[]):- !.
 
@@ -85,4 +90,5 @@ pieceOp2(_,_,_,_, []):-!.
 pieceOp2(X, Y, Xbase,Ybase, [[X, Ybis|_]|List]):- not(Ybis==Ybase),(not(reachableY(X,Ybis,Y));!,fail), pieceOp2(X,Y, Xbase,Ybase,List).
 pieceOp2(X, Y, Xbase,Ybase, [[Xbis, Y|_]|List]):- not(Xbase==Xbis),(not(reachableX(Xbis,Y,X));!,fail), pieceOp2(X,Y, Xbase,Ybase,List).
 pieceOp2(X, Y, Xbase,Ybase, [[Xbis, Ybis|_]|List]):- pieceOp2(X,Y, Xbase,Ybase,List).
+
 

@@ -107,7 +107,9 @@ updatePieceOnBoard([Old_X,Old_Y],[X,Y]):-
 	(Case = '_A_' -> updatePieceInAttackers([Old_X,Old_Y],[X,Y]),setCaseOnBoard(X,Y,'_A_');
 	 Case = '_D_' -> updatePieceInDefenders([Old_X,Old_Y],[X,Y]),setCaseOnBoard(X,Y,'_D_');
 	 Case = '_R_' -> updatePieceInDefenders([Old_X,Old_Y],[X,Y]),setCaseOnBoard(X,Y,'_R_')),
-	setCaseOnBoard(Old_X,Old_Y,'___').
+	size(Size), LastPos is Size - 1, Middle is LastPos / 2,
+	(((Old_X = 0, (Old_Y = 0 ; Old_Y = LastPos)) ; (Old_X = LastPos, (Old_Y = 0 ; Old_Y = LastPos)) ; (Old_X = Middle, Old_Y = Middle))
+		-> setCaseOnBoard(Old_X,Old_Y,'_X_') ; setCaseOnBoard(Old_X,Old_Y,'___')).
 
 
 %	setPieceOnBoard : Uniquement appellé pendant l'initialisation du jeu. Créer les pions dans les listes et les place sur le plateau
@@ -170,20 +172,20 @@ getPieceInDefenders(Indice,Piece) :-
 removePieceOnBoard(X,Y):-
 	getCaseOnBoard(X,Y,Case),
 	(
-		(Case = '_A_',getPieceInAttackers(Index,[X,Y]),removeAttacker(Index));
-		(Case = '_D_',getPieceInDefenders(Index,[X,Y]),removeDefender(Index));
-		(Case = '_R_',removeDefender(0))
+		(Case == '_A_',getPieceInAttackers(Index,[X,Y]),removeAttacker(Index));
+		(Case == '_D_',getPieceInDefenders(Index,[X,Y]),removeDefender(Index));
+		(Case == '_R_',removeDefender(0))
 	),
 	setCaseOnBoard(X,Y,'___').
 
-%	removeAttacker : Enlève une pièce à l'indice 'Index" à la liste des attaquants
+%	removeAttacker : Enlève une pièce à l'indice 'Index' à la liste des attaquants
 %	@param: Index -> Index ou est rangé la pièce dans le tableau
 removeAttacker(Index):-
 	attackers(Att),
 	remove(Index,Att,NewAtt),
 	updateAttackers(NewAtt).
 	
-%	removeDefender : Enlève une pièce à l'indice 'Index" à la liste des defenseurs
+%	removeDefender : Enlève une pièce à l'indice 'Index' à la liste des defenseurs
 %	@param: Index -> Index ou est rangé la pièce dans le tableau
 removeDefender(Index):-
 	defenders(Def),

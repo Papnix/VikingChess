@@ -61,7 +61,7 @@ pseudoRandomPlay:-iaPhase2Agg, displayBoard,  sleep(2), pseudoRandomPlay.
 %%%%% Tests Unitaires & autres %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%	testMove : Test les déplacements des pions	
+%	testMove : Teste les déplacements des pions	
 testMove :-
 	init(13),
 	initListAttDef,
@@ -78,9 +78,56 @@ testMove :-
 	displayBoard, 
 	move(6,8, 'E', 3), 
 	displayBoard.
+	
+	
+%	testDisplayCitadels : Vérifie que les citadelles sont bien ré-affichées lorsqu'un pion était dessus et se déplace
+testDisplayCitadels :-
+	init(9),
+	size(Size),
+	setCitadels(Size),
+	length(ListDef,1),
+	assert(defenders(ListDef)),
+    setPieceOnBoard(0,[0,1], '_D_'),
+    displayBoard,
+	move(0,1,'N',1),
+	displayBoard,
+	move(0,0,'S',1),
+	displayBoard.
+	
 
+%	testMoveCitadels :
+%		Vérifie les mouvements sur les citadelles pour les défenseurs et de "saut" de citadelle pour les attaquants.
+%		Doit renvoyer false après avoir affiché le message 'This is supposed to be the last printboard'.
+testMoveCitadels :-
+	init(9),
+	size(Size),
+	setCitadels(Size),
+	length(ListDef,2),
+	assert(defenders(ListDef)),
+	length(ListAtk,1),
+	assert(attackers(ListAtk)),
+    setPieceOnBoard(0,[0,1], '_D_'), 
+    setPieceOnBoard(1,[3,4], '_D_'),
+    setPieceOnBoard(0,[4,3], '_A_'),
+    displayBoard,
+	move(0,1,'N',1),
+	displayBoard,
+	move(3,4,'E',3),
+	displayBoard,
+	move(6,4,'O',2),
+	displayBoard,
+	move(4,4,'O',1),
+	displayBoard,
+	move(4,3,'S',3),
+	displayBoard,
+	writeln('This is supposed to be the last printboard'),
+	!,
+	move(4,6,'N',2),
+	displayBoard,
+	writeln('Test failure : expected false and no more printboard').
+	
 
-%	testCollision : Doit renvoyer false après 3 affichages.	
+%	testCollision : Doit renvoyer false après 4 affichages.	
 testCollision:- 
 	init(13),
 	initListAttDef,
@@ -88,14 +135,16 @@ testCollision:-
     setPieceInDefenders(0,[6,6]),
     setCaseOnBoard(6,5,'_D_'),
     setPieceInDefenders(1,[6,5]),
-	displayBoard, 
-	move(6,5, 'S', 3), 
-	displayBoard, 
-	move(6,6, 'S', 5),
-	displayBoard, 
+	displayBoard,
+	move(6,6, 'S', 2),
+	displayBoard,
 	move(6,5, 'S', 1), 
 	displayBoard,
-	writeln('Test failure : expected false after 3 printboard').
+	writeln('This is supposed to be the last printboard'),
+	!,
+	move(6,6, 'S', 3), 
+	displayBoard,
+	writeln('Test failure : expected false and no more printboard').
 
 
 %	testRemovePiece : 
@@ -170,7 +219,7 @@ testCreationList :-
 
 
 %	testUpdatePiecesAtt : 
-%		Test la mise à jour de pièce et la synchro data + affichage	
+%		Teste la mise à jour de pièce et la synchro data + affichage	
 testUpdatePiecesAtt :-
     initGame(13),
     attackers(Att),
@@ -183,7 +232,7 @@ testUpdatePiecesAtt :-
     printList(NewAtt).
 
 %	testKingDead : 
-%			
+%		Vérifie la mort du roi lorsque 4 attaquants sont autour de lui et que cela entraîne la victoire des attaquants
 testKingDead :- 
 	init(9),
 	length(ListDef,1),
@@ -199,7 +248,7 @@ testKingDead :-
     checkKingLose.
 
 %	testKingCastle : 
-%	
+%		Vérifie que lorsque le roi se trouve sur une citadelle dans un coin, les défenseurs gagnent
 testKingCastle :- 
 	init(9),
 	length(ListDef,1),
@@ -209,7 +258,7 @@ testKingCastle :-
     checkKingWin.
 
 %	testAttackersDead : 
-%		
+%		Vérifie que lorsqu'il n'y a plus d'attaquants, les défenseurs gagnent
 testAttackersDead :- 
 	init(9),
 	length(ListAtk,0),
@@ -217,7 +266,7 @@ testAttackersDead :-
     checkAttackersDead.	
 
 
-%%%%%% Test IA Defence
+%%%%%% Test IA Defense
 % Doit retourner la plus grande distance de déplacement possible (N = 3)
 testMoveKing:-
 	initGame(9),
@@ -239,8 +288,11 @@ testChooseCaseToMoveOn:-
 launchAllTests :-
 
 	writeln('=== testMove'),testMove,
-	writeln('=== testCombat'),testCombat,
+	writeln('=== testDisplayCitadels'),testDisplayCitadels,
+	writeln('=== testMoveCitadels'),not(testMoveCitadels),
+	writeln('=== testCollision'), not(testCollision),
 	writeln('=== testRemovePiece'),testRemovePiece,
+	writeln('=== testCombat'),testCombat,
 	writeln('=== testPlayerChange'),testPlayerChange,
 	writeln('=== testListAttDef'),testListAttDef,
 	writeln('=== testCreationList'),testCreationList,

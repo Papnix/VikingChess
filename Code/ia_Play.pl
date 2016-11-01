@@ -17,7 +17,7 @@ checkKillable(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player), getCaseOnBoa
 
 opPosition(X, Y, X1, Y1):-NewX is 2*X-X1, NewY is 2*Y-Y1, getOwnPiece(PieceList), pieceOp(NewX, NewY, PieceList).
 
-pieceOp(X,Y, []):-!, fail.
+pieceOp(_,_,[]):-!, fail.
 pieceOp(X, Y, [[Xbis, Ybis|_]|List]):- not(X = Xbis ,((abs(Y,Ybis,ResultY), (Y-Ybis>0, (move(Xbis, Ybis, 'S', ResultY);move(Xbis, Ybis, 'N', ResultY))));Y=Ybis,(abs(X,Xbis,ResultX), (X-Xbis>0, (move(Xbis, Ybis, 'E', ResultX);move(Xbis, Ybis, 'O', ResultX)))))), pieceOp(X, Y, List). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,20 +67,43 @@ testCkDanger:- initGame(9), assert(currentPlayer('A')), move(0,3,'E',2), move(0,
 isSafe(X,Y):- setCaseOnBoard(X,Y,'_P_'), around(X,Y,Neighbors, _), checkPlaceIsSafe(X,Y,Neighbors), setCaseOnBoard(X,Y,'___').
 isSafe(X,Y):- setCaseOnBoard(X,Y,'___'), fail.
 
+
 checkPlaceIsSafe(_,_,[]):- !.
 
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'A', getCaseOnBoard(Xbis, Ybis, E), not(E = '_D_'),not(E = '_R_'), not(E = '_X_'),checkPlaceIsSafe(X, Y, List).
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'A', getCaseOnBoard(Xbis, Ybis, E), ((E = '_D_');(E = '_R_');(E = '_X_')),(Xop is 2*X-Xbis, Yop is 2*Y-Ybis, getOtherPiece(PieceList), (pieceOp2(Xop, Yop, PieceList);(!,fail))), checkPlaceIsSafe(X, Y, List).
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):-
+	currentPlayer(Player),Player = 'A',
+	getCaseOnBoard(Xbis, Ybis, Pawn), 
+	not(Pawn = '_D_'), not(Pawn = '_R_'), not(Pawn = '_X_'),
+	checkPlaceIsSafe(X, Y, List).
+												
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):-
+	currentPlayer(Player),Player = 'A',
+	getCaseOnBoard(Xbis, Ybis, Pawn),
+	((Pawn = '_D_');(Pawn = '_R_');(Pawn = '_X_')),
+	(Xop is 2*X-Xbis, Yop is 2*Y-Ybis, getOtherPiece(PieceList), (pieceOp2(Pawn, Xop, Yop, PieceList);(!,fail))),
+	checkPlaceIsSafe(X, Y, List).
 
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'D', getCaseOnBoard(Xbis, Ybis, E), not(E = '_A_'),not(E = '_X_'),checkPlaceIsSafe(X, Y, List).
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'D', getCaseOnBoard(Xbis, Ybis, E), E = '_A_', E = '_X_', Xop is 2*X-Xbis, Yop is 2*Y-Ybis, getOtherPiece(PieceList), (pieceOp2(Xop, Yop, PieceList);(!,fail)),checkPlaceIsSafe(X, Y, List).
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):-
+	currentPlayer(Player), Player = 'D',
+	getCaseOnBoard(Xbis, Ybis, Pawn),
+	not(Pawn = '_A_'), not(Pawn = '_X_'),
+	checkPlaceIsSafe(X, Y, List).
+												
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):-
+	currentPlayer(Player), Player = 'D',
+	getCaseOnBoard(Xbis, Ybis, Pawn),
+	Pawn = '_A_', Pawn = '_X_',
+	Xop is 2*X-Xbis, Yop is 2*Y-Ybis,
+	getOtherPiece(PieceList),
+	(pieceOp2(Pawn, Xop, Yop, PieceList);(!,fail)),
+	checkPlaceIsSafe(X, Y, List).
 
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- getCaseOnBoard(Xbis, Ybis, E);checkPlaceIsSafe(X,Y,List).
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- getCaseOnBoard(Xbis, Ybis, _) ; checkPlaceIsSafe(X,Y,List).
 
 
 % probleme dans le collision car la case que l'on cherche a determiner si oui ou non elle est dangereuse et vide donc collision n'est pas false ...
-pieceOp2(X,Y, []):-!.
-pieceOp2(X, Y, [[X, Ybis|_]|List]):- (not(reachableY(X,Ybis,Y));!,fail), pieceOp2(X,Y,List).
-pieceOp2(X, Y, [[Xbis, Y|_]|List]):- (not(reachableX(Xbis,Y,X));!,fail), pieceOp2(X,Y,List).
-pieceOp2(X, Y, [[Xbis, Ybis|_]|List]):- pieceOp2(X,Y,List).
+pieceOp2(_,_,_,[]):-!.
+pieceOp2(Pawn, X, Y, [[X, Ybis|_]|List]):- (not(reachableY(X,Ybis,Y,Pawn));!,fail), pieceOp2(Pawn,X,Y,List).
+pieceOp2(Pawn, X, Y, [[Xbis, Y|_]|List]):- (not(reachableX(Xbis,Y,X,Pawn));!,fail), pieceOp2(Pawn,X,Y,List).
+pieceOp2(Pawn, X, Y, [[_, _|_]|List]):- pieceOp2(Pawn,X,Y,List).
 

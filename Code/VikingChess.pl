@@ -183,6 +183,26 @@ testCombat :-
     displayBoard,
     move(2,5,'E', 1),
     displayBoard.
+	
+%	testCombatCitadels :
+%		Vérifie que les citadelles sont bien prises en compte pour tuer un pion.
+%		Une fois le test terminé, il doit rester un attaquant et un défenseur.
+testCombatCitadels :-
+	init(9),
+	setCitadels(9),
+	length(ListDef,2),
+	assert(defenders(ListDef)),
+	length(ListAtk,2),
+	assert(attackers(ListAtk)),
+	setPieceOnBoard(0,[0,3], '_D_'),
+	setPieceOnBoard(1,[1,0], '_D_'),
+	setPieceOnBoard(0,[0,1], '_A_'),
+	setPieceOnBoard(0,[3,0], '_A_'),
+	displayBoard,
+	move(0,3,'N',1),
+	displayBoard,
+	move(3,0,'O',1),
+	displayBoard.
 
 %	testPlayerChange : 
 %		Fait changer le joueur en train de jouer
@@ -293,6 +313,7 @@ launchAllTests :-
 	writeln('=== testCollision'), not(testCollision),
 	writeln('=== testRemovePiece'),testRemovePiece,
 	writeln('=== testCombat'),testCombat,
+	writeln('=== testCombatCitadels'),testCombatCitadels,
 	writeln('=== testPlayerChange'),testPlayerChange,
 	writeln('=== testListAttDef'),testListAttDef,
 	writeln('=== testCreationList'),testCreationList,

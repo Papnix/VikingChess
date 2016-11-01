@@ -44,6 +44,7 @@ around(X, Y, List1, List2) :-
     List1 = [[X, Y1], [X, Y2], [X1, Y], [X2, Y]],
     List2 = [[X, Y1bis], [X, Y2bis], [X1bis, Y], [X2bis, Y]].
 	
+% Renvoie List1 : contient les coordonnées des cases adjacentes à la case (X,Y).
 around(X, Y, List1) :- 
     X1 is X+1, 
     X2 is X-1, 
@@ -58,9 +59,16 @@ getCoord([H|T], X, Y) :- X = H, [H1|_] = T, Y = H1.
 % Permet de savoir si Pion2 est entouré par 2 ennemis (true) ou non (false).
 % (anciennement nommé execute)
 deadlyConfiguration('_A_', '_D_', '_A_').
+deadlyConfiguration('_X_', '_D_', '_A_').
+deadlyConfiguration('_A_', '_D_', '_X_').
+
 deadlyConfiguration('_D_', '_A_', '_D_').
+deadlyConfiguration('_X_', '_A_', '_D_').
+deadlyConfiguration('_D_', '_A_', '_X_').
 deadlyConfiguration('_R_', '_A_', '_D_').
 deadlyConfiguration('_D_', '_A_', '_R_').
+deadlyConfiguration('_R_', '_A_', '_X_').
+deadlyConfiguration('_X_', '_A_', '_R_').
 
 % Retire les pièces ennemies du plateau qui sont entre le pion de coordonnées (X,Y) et un allié à proximité
 % Uniquement utilisé par applyKillNextTo. Pour effectuer un kill, utiliser applyKillNextTo.

@@ -6,6 +6,7 @@
 :- consult(utilities).
 :- consult(game_predicates).
 :- consult(ia_Defence).
+:- consult(ia_Attack).
 :- consult(ia_Play).
 
 

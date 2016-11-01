@@ -62,25 +62,27 @@ hMove(X,Y,Xroi,Yroi, NbCase):- (X<Xroi,((move(X,Y, 'E', NbCase), !);( NCase is N
 vMove(_,_,_,_, 0):-!, fail.
 vMove(X,Y,Xroi,Yroi, NbCase):- (Y<Yroi,((move(X,Y, 'S', NbCase), !);( NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail))));((move(X,Y, 'N', NbCase),!);(NCase is NbCase-1,vMove(X,Y,Xroi,Yroi, NCase);(!,fail))). 
 
-testCkDanger:- initGame(9), assert(currentPlayer('A')), move(0,3,'E',2), move(0,5,'E',2), move(2,3,'O',2), move(2,5,'O',2),displayBoard, isSafe(1,8).
+testCkDanger:- initGame(9), assert(currentPlayer('A')), move(0,3,'E',2), move(0,5,'E',2), move(2,3,'O',2), move(2,5,'O',2),displayBoard,isSafe(3,3).
 
-isSafe(X,Y):- setCaseOnBoard(X,Y,'_P_'), around(X,Y,Neighbors, _), checkPlaceIsSafe(X,Y,Neighbors), setCaseOnBoard(X,Y,'___').
-isSafe(X,Y):- setCaseOnBoard(X,Y,'___'), fail.
+isSafe(X,Y):- around(X,Y,Neighbors, _), checkPlaceIsSafe(X,Y,Neighbors).
+
+% isSafe(X,Y):- setCaseOnBoard(X,Y,'_P_'), around(X,Y,Neighbors, _), checkPlaceIsSafe(X,Y,Neighbors), setCaseOnBoard(X,Y,'___').
+% isSafe(X,Y):- setCaseOnBoard(X,Y,'___'), fail.
 
 checkPlaceIsSafe(_,_,[]):- !.
 
 checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'A', getCaseOnBoard(Xbis, Ybis, E), not(E = '_D_'),not(E = '_R_'), not(E = '_X_'),checkPlaceIsSafe(X, Y, List).
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'A', getCaseOnBoard(Xbis, Ybis, E), ((E = '_D_');(E = '_R_');(E = '_X_')),(Xop is 2*X-Xbis, Yop is 2*Y-Ybis, getOtherPiece(PieceList), (pieceOp2(Xop, Yop, PieceList);(!,fail))), checkPlaceIsSafe(X, Y, List).
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'A', getCaseOnBoard(Xbis, Ybis, E), (E == '_X_';E == '_D_';E == '_R_'),(Xop is 2*X-Xbis, Yop is 2*Y-Ybis, getOtherPiece(PieceList), (pieceOp2(Xop, Yop,Xbis,Ybis, PieceList);(!,fail))), checkPlaceIsSafe(X, Y, List).
 
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'D', getCaseOnBoard(Xbis, Ybis, E), not(E = '_A_'),not(E = '_X_'),checkPlaceIsSafe(X, Y, List).
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'D', getCaseOnBoard(Xbis, Ybis, E), E = '_A_', E = '_X_', Xop is 2*X-Xbis, Yop is 2*Y-Ybis, getOtherPiece(PieceList), (pieceOp2(Xop, Yop, PieceList);(!,fail)),checkPlaceIsSafe(X, Y, List).
+%checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'D', getCaseOnBoard(Xbis, Ybis, E), not(E = '_A_'),not(E = '_X_'),checkPlaceIsSafe(X, Y, List).
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- currentPlayer(Player),Player = 'D', getCaseOnBoard(Xbis, Ybis, E), (E == '_A_'; E == '_X_'), Xop is 2*X-Xbis, Yop is 2*Y-Ybis, getOtherPiece(PieceList), (pieceOp2(Xop, Yop,Xbis,Ybis, PieceList);(!,fail)),checkPlaceIsSafe(X, Y, List).
 
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- getCaseOnBoard(Xbis, Ybis, E);checkPlaceIsSafe(X,Y,List).
+checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- checkPlaceIsSafe(X,Y,List).
 
 
 % probleme dans le collision car la case que l'on cherche a determiner si oui ou non elle est dangereuse et vide donc collision n'est pas false ...
-pieceOp2(X,Y, []):-!.
-pieceOp2(X, Y, [[X, Ybis|_]|List]):- (not(reachableY(X,Ybis,Y));!,fail), pieceOp2(X,Y,List).
-pieceOp2(X, Y, [[Xbis, Y|_]|List]):- (not(reachableX(Xbis,Y,X));!,fail), pieceOp2(X,Y,List).
-pieceOp2(X, Y, [[Xbis, Ybis|_]|List]):- pieceOp2(X,Y,List).
+pieceOp2(_,_,_,_, []):-!.
+pieceOp2(X, Y, Xbase,Ybase, [[X, Ybis|_]|List]):- not(Ybis==Ybase),(not(reachableY(X,Ybis,Y));!,fail), pieceOp2(X,Y, Xbase,Ybase,List).
+pieceOp2(X, Y, Xbase,Ybase, [[Xbis, Y|_]|List]):- not(Xbase==Xbis),(not(reachableX(Xbis,Y,X));!,fail), pieceOp2(X,Y, Xbase,Ybase,List).
+pieceOp2(X, Y, Xbase,Ybase, [[Xbis, Ybis|_]|List]):- pieceOp2(X,Y, Xbase,Ybase,List).
 

@@ -19,7 +19,6 @@ decide(DirectionToPlay,NbCase):-
 	(
 		% On check les directions privilégiées
 		(
-			%writeln('Pref vertical'),
 			prefered_Vertical_Direction(Dir),
 			getAllWalkablePath([PosX,PosY], Dir, ListCase),
 			not(ListCase == []),
@@ -27,7 +26,6 @@ decide(DirectionToPlay,NbCase):-
 		)
 		;
 		(
-			%writeln('Pref horizontal'),
 			prefered_Horizontal_Direction(Dir),
 			getAllWalkablePath([PosX,PosY], Dir, ListCase),
 			not(ListCase == []),
@@ -36,9 +34,8 @@ decide(DirectionToPlay,NbCase):-
 		;
 		(	% Si aucune direction n'est privilégié, alors on va checker les chemins
 			(	
-				%writeln('Bloc horizontal'),
 				% On ne calcul pas de chemin si les conditions d'avant on échouées sur un "not(ListCase == [])" 	
-				not(prefered_Horizontal_Direction(Dir)),
+				not(prefered_Horizontal_Direction(_)),
 			
 				% On est maintenant sûr qu'il n'y a pas de direction horizontale, on cherche si une direction peut être prise (not(ListCase == []))
 				(getAllWalkablePath([PosX,PosY], 'E', ListCase), not(ListCase == []), updatePrefered_Horizontal_Direction('E'),DirectionToPlay = 'E');
@@ -46,9 +43,8 @@ decide(DirectionToPlay,NbCase):-
 			)
 			;
 			(
-				%writeln('Bloc vertical'),
-				% De même pour la verticali
-				not(prefered_Vertical_Direction(Dir)),
+				% De même pour la verticale
+				not(prefered_Vertical_Direction(_)),
 							
 				(getAllWalkablePath([PosX,PosY], 'N', ListCase), not(ListCase == []), updatePrefered_Vertical_Direction('N'),DirectionToPlay = 'N');
 				(getAllWalkablePath([PosX,PosY], 'S', ListCase), not(ListCase == []), updatePrefered_Vertical_Direction('S'),DirectionToPlay = 'S')	

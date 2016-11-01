@@ -43,7 +43,7 @@ update(OldValue, [A|B],[X|Y], NewValue) :- A = X, update(OldValue,B,Y, NewValue)
 remove(Indice, List, NewList):- nth0(Indice,List,Elmt), delete(List, Elmt, NewList).
 
 % Modifie le joueur actuellement en train de jouer
-changePlayer:- currentPlayer(Player),resetPlayer, (Player = 'A',assert(currentPlayer('D'))) ; (Player = 'D',assert(currentPlayer('A'))).
+changePlayer:- currentPlayer(Player),resetPlayer, ((Player = 'A',assert(currentPlayer('D'))) ; (Player = 'D',assert(currentPlayer('A')))).
 
 % Enregistre le nouveau plateau de jeu comme étant le plateau actuellement utilisé
 applyIt(NewBoard) :- resetBoard, assert(board(NewBoard)).

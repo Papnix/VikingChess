@@ -44,6 +44,7 @@ around(X, Y, List1, List2) :-
     List1 = [[X, Y1], [X, Y2], [X1, Y], [X2, Y]],
     List2 = [[X, Y1bis], [X, Y2bis], [X1bis, Y], [X2bis, Y]].
 	
+% Renvoie List1 : contient les coordonnées des cases adjacentes à la case (X,Y).
 around(X, Y, List1) :- 
     X1 is X+1, 
     X2 is X-1, 
@@ -58,9 +59,16 @@ getCoord([H|T], X, Y) :- X = H, [H1|_] = T, Y = H1.
 % Permet de savoir si Pion2 est entouré par 2 ennemis (true) ou non (false).
 % (anciennement nommé execute)
 deadlyConfiguration('_A_', '_D_', '_A_').
+deadlyConfiguration('_X_', '_D_', '_A_').
+deadlyConfiguration('_A_', '_D_', '_X_').
+
 deadlyConfiguration('_D_', '_A_', '_D_').
+deadlyConfiguration('_X_', '_A_', '_D_').
+deadlyConfiguration('_D_', '_A_', '_X_').
 deadlyConfiguration('_R_', '_A_', '_D_').
 deadlyConfiguration('_D_', '_A_', '_R_').
+deadlyConfiguration('_R_', '_A_', '_X_').
+deadlyConfiguration('_X_', '_A_', '_R_').
 
 % Retire les pièces ennemies du plateau qui sont entre le pion de coordonnées (X,Y) et un allié à proximité
 % Uniquement utilisé par applyKillNextTo. Pour effectuer un kill, utiliser applyKillNextTo.
@@ -84,81 +92,83 @@ applyKillNextTo(X, Y) :-
 % - Collisions pièces ----------------------------------------------------------------------------------------------------------------------------- %
 
 % Vérifie que les cases du plateau de la case (X,Y) à la case (NewX, Y) sont toutes libres (true). Si une case ne l'est pas, renvoie false.
+% Vérifie également si la case (NewX, Y) n'est pas une citadelle dans le cas où 'Pawn' est un attaquant.
+% A noter qu'une citadelle peut être "sautée" par un attaquant, c'est-à-dire que le pion peut aller à une case
+% au-delà de la citadelle, tant qu'il ne s'arrête pas dessus.
 % X, Y et NewX doivent être des coordonnées valides.
-reachableX(NewX, Y, NewX):-
+reachableX(NewX, Y, NewX, Pawn):-
 	getCaseOnBoard(NewX,Y,E),
-	E = '___'.
+	(E = '___' ; (E = '_X_', not(Pawn = '_A_'))).
 	
-reachableX(X, Y, NewX):-
+reachableX(X, Y, NewX, Pawn):-
 	Delta is NewX - X,
 	(Delta > 0 -> Xinc is X + 1;
 	Delta < 0 -> Xinc is X - 1),
 	getCaseOnBoard(Xinc,Y,E),
-	E = '___',
-	reachableX(Xinc, Y,  NewX).
+	(E = '___' ; E = '_X_'),
+	reachableX(Xinc, Y, NewX, Pawn).
 
 % Voir commentaire de reachableX. Le fonctionnement est le même
-reachableY(X, NewY, NewY):-
+reachableY(X, NewY, NewY, Pawn):-
 	getCaseOnBoard(X,NewY,E),
-	E = '___'.
+	(E = '___' ; (E = '_X_', not(Pawn = '_A_'))).
 
-reachableY(X, Y, NewY):-
+reachableY(X, Y, NewY, Pawn):-
 	Delta is NewY - Y,
 	(Delta > 0 -> Yinc is Y + 1; Delta < 0 -> Yinc is Y - 1),
 	getCaseOnBoard(X,Yinc,E),
-	E = '___',
-	reachableY(X, Yinc,  NewY).
+	(E = '___' ; E = '_X_'),
+	reachableY(X, Yinc, NewY, Pawn).
 
 
 % - Mouvements pièces ----------------------------------------------------------------------------------------------------------------------------- %
 
-% Déplace la pièce de coordonnées (X,Y) de 'NbCase' cases vers le Nord. Les collisions sont vérifiées.
+% Déplace la pièce 'Pawn' de coordonnées (X,Y) de 'NbCase' cases vers le Nord. Les collisions sont vérifiées.
 % (X,Y) doit impérativement correspondre aux coordonnées d'une pièce.
 % Ce prédicat est uniquement utilisé par move. Pour déplacer une pièce, utiliser move.
-moveN(X, Y, NbCase):-
+moveN(Pawn, X, Y, NbCase):-
 	NewY is Y - NbCase,
 	NewY >= 0,
-	reachableY(X, Y, NewY),
+	reachableY(X, Y, NewY, Pawn),
 	updatePieceOnBoard([X, Y], [X, NewY]), 
 	applyKillNextTo(X, NewY).
 	
 % Voir commentaire de moveN, le fonctionnement est le même
-moveS(X, Y, NbCase):-
+moveS(Pawn, X, Y, NbCase):-
 	NewY is Y + NbCase,
 	size(Size),
 	NewY < Size,
-	reachableY(X, Y, NewY),
+	reachableY(X, Y, NewY, Pawn),
 	updatePieceOnBoard([X, Y], [X, NewY]), 
 	applyKillNextTo(X, NewY).
 	
 % Voir commentaire de moveN, le fonctionnement est le même
-moveE(X, Y, NbCase):-
+moveE(Pawn, X, Y, NbCase):-
 	NewX is X + NbCase,
 	size(Size),
 	NewX < Size,
-	reachableX(X, Y, NewX), 
+	reachableX(X, Y, NewX, Pawn), 
 	updatePieceOnBoard([X, Y], [NewX, Y]),
 	applyKillNextTo(NewX, Y).
 	
 % Voir commentaire de moveN, le fonctionnement est le même
-moveO(X, Y, NbCase):-
+moveO(Pawn, X, Y, NbCase):-
 	NewX is X - NbCase,
 	NewX >= 0, 
-	reachableX(X, Y, NewX),
+	reachableX(X, Y, NewX, Pawn),
 	updatePieceOnBoard([X, Y], [NewX, Y]),
 	applyKillNextTo(NewX, Y).
 
 % Déplace la pièce de coordonnées (X,Y) de 'NbCase' cases dans la direction 'Dir'. Les collisions sont vérifiées.
 % 'Dir' peut prendre les valeurs 'N', 'S', 'E' ou 'O'.
 move(X, Y, Dir, NbCase):-
-	NbCase > 0,
-	getCaseOnBoard(X, Y, E),
-	not(E = '___'),
-	(Dir = 'N' -> moveN(X, Y, NbCase);
-	Dir = 'S' -> moveS(X, Y, NbCase);
-	Dir = 'E' -> moveE(X, Y, NbCase);
-	Dir = 'O' -> moveO(X, Y, NbCase)).
-	
+	getCaseOnBoard(X, Y, Pawn),
+	not(Pawn = '___'),
+	(Dir = 'N' -> moveN(Pawn, X, Y, NbCase);
+	Dir = 'S' -> moveS(Pawn, X, Y, NbCase);
+	Dir = 'E' -> moveE(Pawn, X, Y, NbCase);
+	Dir = 'O' -> moveO(Pawn, X, Y, NbCase)).
+
 moveKing(X, Y, Dir, NbCase):-
 	NbCase > 0,
 	getCaseOnBoard(X, Y, E),
@@ -188,7 +198,4 @@ moveKing(X, Y, Dir, NbCase):-
 		updatePieceOnBoard([X, Y], [NewX, Y]),
 		applyKillNextTo(NewX, Y)
 	).
-	
-
-	
 	

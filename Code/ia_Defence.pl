@@ -65,7 +65,7 @@ isPlayableCase([X,Y],ListCase,NbCase):-
 	%   checkDanger([Targeted_X,Targeted_Y]),
 	calculNbCase([X,Y],[Targeted_X,Targeted_Y],NbCase).
 
-% Calcul le déplacement en nombre de case entre deux positions			
+% Calcule le déplacement en nombre de case entre deux positions. Renvoie le résultat dans 'NbCase'.		
 calculNbCase([X,Y],[ToX,ToY],NbCase):-
 	(abs(ToX,X,Result), Result > 0, NbCase = Result);
 	(abs(ToY,Y,Result), Result > 0, NbCase = Result).				

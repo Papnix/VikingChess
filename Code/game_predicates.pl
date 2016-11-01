@@ -177,15 +177,17 @@ moveKing(X, Y, Dir, NbCase):-
 		Dir = 'N',
 		NewY is Y - NbCase,
 		updatePieceOnBoard([X, Y], [X, NewY]),
-		applyKillNextTo(NewX, Y)
+		applyKillNextTo(X, NewY)
 	)
-	;	(
+	;
+	(
 		Dir = 'S',
 		NewY is Y + NbCase,
 		updatePieceOnBoard([X, Y], [X, NewY]),
-		applyKillNextTo(NewX, Y)
+		applyKillNextTo(X, NewY)
 	)
-	;	(
+	;
+	(
 		Dir = 'E',
 		NewX is X + NbCase,
 		updatePieceOnBoard([X, Y], [NewX, Y]),

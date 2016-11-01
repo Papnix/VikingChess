@@ -258,7 +258,7 @@ checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):-
 	),
 	checkPlaceIsSafe(X, Y, List).
 
-checkPlaceIsSafe(X, Y, [[Xbis, Ybis|_]|List]):- checkPlaceIsSafe(X,Y,List).
+checkPlaceIsSafe(X, Y, [[_, _|_]|List]):- checkPlaceIsSafe(X,Y,List).
 
 
 % probleme dans le collision car la case que l'on cherche a determiner si oui ou non elle est dangereuse et vide donc collision n'est pas false ...
@@ -275,7 +275,7 @@ pieceOp2(X, Y, Xbase,Ybase, [[Xbis, Y|_]|List]):-
 	pieceOp2(X,Y, Xbase,Ybase,List).
 	
 	
-pieceOp2(X, Y, Xbase,Ybase, [[Xbis, Ybis|_]|List]):- 
+pieceOp2(X, Y, Xbase,Ybase, [[_, _|_]|List]):- 
 	pieceOp2(X,Y, Xbase,Ybase,List).
 
 

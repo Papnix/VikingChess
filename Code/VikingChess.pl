@@ -6,7 +6,7 @@
 :- consult(utilities).
 :- consult(game_predicates).
 :- consult(ia_Defence).
-:- consult(ia_Play).
+:- consult(ia_Attack).
 
 
 %%%%% init game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -306,7 +306,7 @@ testMoveKingAdvanced:-
 	removePieceOnBoard(2,4),
 	removePieceOnBoard(4,6),
 	displayBoard,
-	(decide(DirectionToPlay,NbCase);true),
+	(decide(_,_);true),
 	sleep(1),
 	removePieceOnBoard(4,3),
 	removePieceOnBoard(5,4),

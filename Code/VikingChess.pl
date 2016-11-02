@@ -30,7 +30,7 @@ gameloop:-
 	currentPlayer(Player),
 	write('New turn for:'),	writeln(Player),
     callAI, % appel à l'IA du Player 
-	sleep(0.5),
+	sleep(1),
     displayBoard,
 	changePlayer,
 	(checkForVictory;gameloop).

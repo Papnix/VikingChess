@@ -41,7 +41,7 @@ gameloop:-
 %%%%% Appel des IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	callAI:-
 		currentPlayer(Player),
-		(Player = 'A', iaPhase2);
+		(Player = 'A', (iaPhase1Agg;iaPhase2Agg));
 		runAI_Defence.
 
 

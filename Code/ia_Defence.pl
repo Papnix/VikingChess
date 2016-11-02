@@ -5,7 +5,7 @@
 
 % Méthode à appeller pour utiliser l'IA
 runAI_Defence:- 
-		kingEscape;randomMove('D').
+		kingEscape;iaPhase1Agg;randomMove('D').
 	
 	
 kingEscape:-

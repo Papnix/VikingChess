@@ -15,7 +15,6 @@ getOwnPiece(PieceList):-
 
 iaPhase1Agg:- 
 	currentPlayer(Player),
-	write(Player),
 	writeln(" - IA aggressive"),
 	getOtherPiece(PieceList),
 	checkTarget(PieceList). 
@@ -44,36 +43,35 @@ opPosition(X, Y, X1, Y1):-
 
 pieceOp(_,_,[]):-!, fail.
 pieceOp(X, Y, [[Xbis, Ybis|_]|List]):-
-	not(
-	X = Xbis,
-		(
-			(
-				abs(Y,Ybis,ResultY), 
-				(Y - Ybis > 0,
-					(
-						move(Xbis, Ybis, 'S', ResultY) ;
-						move(Xbis, Ybis, 'N', ResultY)
-					)
-				)
-			)
-			;
-			Y=Ybis,
-			(
-				abs(X,Xbis,ResultX),
-				( X - Xbis > 0,
-					(move(Xbis, Ybis, 'E', ResultX);move(Xbis, Ybis, 'O', ResultX))
-				)
-			)
-		)
-	),
-	pieceOp(X, Y, List). 
+	pieceOp(X, Y, [[Xbis, Ybis|_]|List]):-(
+ X = Xbis,
+  (
+   (
+    abs(Y,Ybis,ResultY), 
+    (Y - Ybis > 0,
+     (
+      move(Xbis, Ybis, 'S', ResultY) ;
+      move(Xbis, Ybis, 'N', ResultY)
+     )
+    )
+   )
+   ;
+   Y=Ybis,
+   (
+    abs(X,Xbis,ResultX),
+    ( X - Xbis > 0,
+     (move(Xbis, Ybis, 'E', ResultX);move(Xbis, Ybis, 'O', ResultX))
+    )
+   )
+  )
+ ).
+pieceOp(X, Y, [[Xbis, Ybis|_]|List]):-pieceOp(X, Y, List). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% IA - Totalement Aleatoire %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 iaPhase2:-
 	currentPlayer(Player),
-	write(Player),
 	writeln(" - IA aleatoire"),
 	randomMove(Player).
 
